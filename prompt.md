@@ -55,8 +55,8 @@ giving a 7 11/16" ledge open to each room. Held by 3/4" x 1 1/2" cleats on both
 faces at the top plate and again at the ceiling — four runs of 102 1/2".
 
 ## Facing (board and batten)
-- 4x3 backer, office face: one 1/4" MDF board, 43 7/8" x 57 5/8"
-- 4x4 backer, bedroom face: two 1/4" MDF boards, 28 15/16" x 57 5/8" each
+- 4x3 backer, office face: one 1/4" plywood board (paint-grade, birch or poplar core), 43 7/8" x 57 5/8"
+- 4x4 backer, bedroom face: two 1/4" plywood boards (paint-grade, birch or poplar core), 28 15/16" x 57 5/8" each
 - Battens: 1x3 primed pine (3/4" x 2 1/2"), three per face — one at each outer
   edge, one centred. On the 4x4 the centre batten covers the MDF seam; on the 4x3
   it's decorative.
@@ -72,7 +72,7 @@ faces at the top plate and again at the ceiling — four runs of 102 1/2".
 
 ## Materials estimate (please check)
 - 3/4" plywood: 3 sheets (2 if the wall cleats are 1x4 pine instead)
-- 1/4" MDF: 3 sheets (backers)
+- 1/4" plywood (paint-grade): 3 sheets (backers)
 - 1/2" MDF: 1 sheet (upper panel)
 - 1x3 primed pine: ~4 sticks of 8' (battens)
 - 1x2 primed pine: ~4 sticks (upper panel perimeter and ceiling trim)
@@ -114,3 +114,15 @@ A third option is having an electrician shift the box 12-18" toward the office.
 - How removable does "non-permanent" need to be — are ceiling cleats into joists
   and lags into studs acceptable?
     - yes acceptable
+
+
+## Additional Room contents for rendering perspective
+
+### Office
+from right to left we will have an ikea alex drawer unit - the tall one which is 45.5" tall and same width as the shorter ones.  to the left of that the shorter alex unit Width 14 1/8 " Depth 22 7/8 " Height 27 1/2 " there are 2 of this under a white alex desktop which is 79" long. there is a aeron chair under the desk. This leaves a ~12" gap between the wall and the left of the desk
+
+### Bedroom
+
+44x23 desk on bedroom side on right in front of 4x4
+the bedroom side will have a white kallax and the backer panels on this side will be painted a very light pink
+the desk is a brown stained wood antique desk with drawers on each side

@@ -1,0 +1,542 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Divider Elevations</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; background:#f0ede8; margin:0; padding:24px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:32px 0 6px; color:#333; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .meta { color:#666; font-size:12px; margin-bottom:18px; }
+  .panel { background:#fff; border:1px solid #ccc; border-radius:6px; padding:12px; margin-bottom:28px; }
+  svg { display:block; width:100%; height:auto; }
+  .label { font-family: -apple-system, Helvetica, Arial, sans-serif; }
+  .toggle-row { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:normal; color:#555; }
+  .toggle-row input { cursor:pointer; }
+  .note { color:#8a7c5f; font-size:11.5px; margin:6px 0 0; }
+</style>
+</head>
+<body>
+<h1>Basement Wall Divider — Room Elevations &amp; Plan</h1>
+<div class="meta">Board-and-batten facing shown on each backer face. Scale: 1 unit = 1 inch (viewBox scaled). Not for construction dimensioning — see prompt.md for cut lists. Dimension lines shown are the key structural and furniture figures called out in prompt.md; verify against the cut list before cutting anything.</div>
+
+<div class="panel">
+<h2>Bedroom (Room A) — view facing the divider
+  <label class="toggle-row"><input type="checkbox" id="toggle-bedroom-furniture" checked> Show furniture</label>
+</h2>
+<div id="bedroom"></div>
+</div>
+
+<div class="panel">
+<h2>Office (Room B) — view facing the divider
+  <label class="toggle-row"><input type="checkbox" id="toggle-office-furniture" checked> Show furniture</label>
+</h2>
+<div id="office"></div>
+</div>
+
+<div class="panel">
+<h2>Office corner — plan view (top-down, schematic)</h2>
+<div id="plan"></div>
+<p class="note">Schematic only — shows the divider footprint and the office side wall the desk run sits against (tall Alex → short Alex → 79" desktop → short Alex, flush end to end, 93 1/8" total from the wall). Not drawn to full room dimensions since those weren't provided.</p>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function text(x,y,str,size,opts) {
+  opts = opts||{};
+  const t = el("text", Object.assign({x,y,"font-size":size,"font-family":"-apple-system,Helvetica,Arial,sans-serif",fill:opts.fill||"#333","text-anchor":opts.anchor||"middle"},opts.attrs||{}));
+  t.textContent = str;
+  return t;
+}
+
+// ============ ROOM CONSTANTS (inches) ============
+const OPEN_W = 105.5;        // wall to wall
+const CASE_IN = 104;         // inside casing
+const FLOOR_Y = 0;
+const CEIL_LOW = 73;         // right 77" of opening
+const CEIL_HIGH = 82;        // left 28.5" of opening
+const STEP_X = 28.5;         // from left wall, ceiling steps down here
+const ROOM_H = 96;           // assume 8' room height for wall drawing beyond opening
+
+// Divider assembly (measured from left edge of the 104" inside-casing opening, offset by 0.75 gap)
+const GAP = 0.75;
+const STILE = 0.75;
+const K43_W = 43.875;
+const CENTER_STILE = 0.75;
+const K44_W = 57.875;
+const carcassTop = 58.375;
+const ledgeTop = 59.125;
+const bottomPlateTop = 0.75;
+const DIVIDER_DEPTH = 15.875; // 15 3/8 carcass + 1/4 backer each face
+
+// x positions within the 104" inside span, left origin = inside casing left edge
+const xLeftStile0 = GAP;
+const xLeftStile1 = xLeftStile0 + STILE;              // 1.5
+const xK43_0 = xLeftStile1;                            // 1.5
+const xK43_1 = xK43_0 + K43_W;                          // 45.375
+const xCenter0 = xK43_1;
+const xCenter1 = xCenter0 + CENTER_STILE;               // 46.125
+const xK44_0 = xCenter1;
+const xK44_1 = xK44_0 + K44_W;                          // 104
+const xRightStile0 = xK44_1;
+const xRightStile1 = xRightStile0 + STILE;              // 104.75
+const ceilStepAbs = STEP_X;
+
+// Furniture wall: both the bedroom desk and the office desk run sit against the wall
+// plane at the right stile's outer face (per prompt.md: "44x23 desk ... on right in
+// front of 4x4"; office desk confirmed to sit on the side wall right at the divider's
+// 4x4 edge). This is the anchor every "against the wall" / "flush with" furniture
+// placement below is measured from.
+const FURNITURE_WALL_X = xRightStile1; // 104.75
+
+// ============ DIMENSION LINE HELPER ============
+// Draws a horizontal dimension line with tick marks and a centered label, offset
+// below (or above, if belowBaseline is false) the geometry it measures.
+function dimLineFactory(X, Y, g) {
+  return function dim(xin0, xin1, yBaseline, label, opts) {
+    opts = opts || {};
+    const offset = opts.offset != null ? opts.offset : 14;
+    const y = Y(yBaseline) + offset; // screen y, offset downward (svg y grows down)
+    const xa = X(xin0), xb = X(xin1);
+    const x0 = Math.min(xa,xb), x1 = Math.max(xa,xb);
+    const stroke = opts.color || "#7a6f52";
+    g.appendChild(el("line", {x1:x0,y1:y,x2:x1,y2:y, stroke, "stroke-width":1}));
+    // end ticks
+    [x0,x1].forEach(x => g.appendChild(el("line", {x1:x,y1:y-4,x2:x,y2:y+4, stroke, "stroke-width":1})));
+    // extension lines back to the geometry
+    [ [xin0,x0], [xin1,x1] ].forEach(([xin,x]) => {
+      g.appendChild(el("line", {x1:x,y1:Y(yBaseline),x2:x,y2:y, stroke, "stroke-width":0.5, "stroke-dasharray":"2,2"}));
+    });
+    const midX = (x0+x1)/2;
+    const t = text(midX, y+11, label, opts.size||9.5, {fill:stroke});
+    if (opts.bg !== false) {
+      // small background so the label reads over busy fills
+      g.appendChild(el("rect", {x: midX - (label.length*2.6), y: y+2, width: label.length*5.2, height: 11, fill:"#fdfcf8", opacity:0.85}));
+    }
+    g.appendChild(t);
+  };
+}
+function vDimLineFactory(X, Y, g) {
+  return function vdim(yin0, yin1, xBaseline, label, opts) {
+    opts = opts || {};
+    const offset = opts.offset != null ? opts.offset : 14;
+    const x = X(xBaseline) + offset;
+    const ya = Y(yin0), yb = Y(yin1);
+    const y0 = Math.min(ya,yb), y1 = Math.max(ya,yb);
+    const stroke = opts.color || "#7a6f52";
+    g.appendChild(el("line", {x1:x,y1:y0,x2:x,y2:y1, stroke, "stroke-width":1}));
+    [y0,y1].forEach(y => g.appendChild(el("line", {x1:x-4,y1:y,x2:x+4,y2:y, stroke, "stroke-width":1})));
+    [ [yin0,y0], [yin1,y1] ].forEach(([yin,y]) => {
+      g.appendChild(el("line", {x1:X(xBaseline),y1:y,x2:x,y2:y, stroke, "stroke-width":0.5, "stroke-dasharray":"2,2"}));
+    });
+    const midY = (y0+y1)/2;
+    g.appendChild(el("rect", {x: x+3, y: midY-6, width: label.length*5.6, height: 12, fill:"#fdfcf8", opacity:0.85}));
+    const t = text(x+6, midY+3.5, label, opts.size||9.5, {fill:stroke, anchor:"start"});
+    g.appendChild(t);
+  };
+}
+
+// ============ DRAW FUNCTION (elevations) ============
+// mirror: false = normal left-to-right as measured (bedroom, 4x3 on left)
+// mirror: true  = flipped (office view, 4x4 appears on left)
+function drawElevation(containerId, opts) {
+  const { mirror, furniture, toggleId } = opts;
+
+  const PXPI = 6.2; // pixels per inch
+  // ROOM_W_EXTRA: space for the furniture run (~130" covers the office's full desk
+  // run out to its wall). DIM_MARGIN: small headroom so outward dimension labels
+  // don't clip. The furniture run always extends on-screen AWAY from the divider,
+  // which is screen-right when unmirrored (bedroom) and screen-left when mirrored
+  // (office) — so the big margin goes on whichever side is the "away" side for
+  // this view, and the small one on the other.
+  const ROOM_W_EXTRA = 130;
+  const DIM_MARGIN = 26;
+  const MARGIN_L = mirror ? ROOM_W_EXTRA : DIM_MARGIN;
+  const MARGIN_R = mirror ? DIM_MARGIN : ROOM_W_EXTRA;
+  const totalW = (OPEN_W + MARGIN_L + MARGIN_R) * PXPI;
+  const totalH = (ROOM_H + 34) * PXPI; // extra headroom at top for dimension lines
+  const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
+
+  function X(xin) {
+    return (MARGIN_L + (mirror ? (OPEN_W - xin) : xin)) * PXPI;
+  }
+  // XR(dist): screen-space helper for furniture, anchored at the furniture wall
+  // (FURNITURE_WALL_X, defined below the constants block — the real-world x where
+  // both rooms' furniture butts up, right next to the divider's 4x4 end).
+  // Convention used by the furniture-placement code below: dist=0 is the wall
+  // itself, and dist goes NEGATIVE moving away from the wall back toward the
+  // divider (so e.g. the tall Alex's near face, the desk, and short Alex #1 all
+  // sit at dist < 0, in increasing distance from the wall). XR maps dist=0 to
+  // just past the divider's screen edge (plus BREAK_GAP) and more-negative dist
+  // further out from there — in the room's actual "away from divider" screen
+  // direction, which is screen-right when unmirrored (bedroom) and screen-left
+  // when mirrored (office), since mirroring flips which side is which.
+  // BREAK_GAP: the furniture run is along a WALL PERPENDICULAR to the divider
+  // (confirmed layout: office side wall right at the divider's 4x4 end), not in
+  // the same picture plane as this elevation — so it can't be drawn to true
+  // scale continuous with the divider face without the two overlapping. This
+  // gap plus the dashed break mark (drawn below) keeps them legible as two
+  // distinct wall planes shown side by side, not one continuous room.
+  const BREAK_GAP = 14;
+  function XR(dist) {
+    const wallScreenX = X(FURNITURE_WALL_X);
+    const awayFromDivider = mirror ? -1 : 1; // screen direction that means "further from the divider"
+    return wallScreenX + awayFromDivider * (BREAK_GAP - dist) * PXPI;
+  }
+  function Y(yin) { return totalH - (yin + 12) * PXPI; }
+
+  const g = el("g", {});
+  svg.appendChild(g);
+  const dim = dimLineFactory(X, Y, g);
+  const vdim = vDimLineFactory(X, Y, g);
+
+  // ---- Floor / back wall ----
+  g.appendChild(el("rect", {x:0, y:Y(0), width: totalW, height: totalH-Y(0), fill:"#ded6c8"}));
+  g.appendChild(el("rect", {x:0, y:0, width: totalW, height: Y(0), fill:"#f4f1ea"}));
+
+  // ---- Opening / casing outline ----
+  const openLeftX = X(0), openRightX = X(OPEN_W);
+  g.appendChild(el("rect", {
+    x: Math.min(openLeftX, openRightX) - 4, y: Y(CEIL_HIGH) - 4,
+    width: Math.abs(openRightX-openLeftX) + 8, height: Y(0) - Y(CEIL_HIGH) + 8,
+    fill:"none", stroke:"#b8ab90", "stroke-width": 6
+  }));
+
+  // ---- Ceiling step / soffit ----
+  const stepXcoord = X(ceilStepAbs);
+  const openingScreenRightEdge = mirror ? X(0) : X(OPEN_W); // the true opening edge, distinct from the furniture wall
+  const path = `M ${X(0)} ${Y(CEIL_HIGH)} L ${stepXcoord} ${Y(CEIL_HIGH)} L ${stepXcoord} ${Y(CEIL_LOW)} L ${X(OPEN_W)} ${Y(CEIL_LOW)}`;
+  g.appendChild(el("path", {d:path, fill:"none", stroke:"#a8977a", "stroke-width":2, "stroke-dasharray":"4,3"}));
+  g.appendChild(el("rect", {
+    x: Math.min(stepXcoord, openingScreenRightEdge), y: 0,
+    width: Math.abs(openingScreenRightEdge - stepXcoord),
+    height: Y(CEIL_LOW), fill:"#e8e0d0"
+  }));
+  g.appendChild(text((stepXcoord + openingScreenRightEdge)/2, Y(CEIL_LOW)-8, "9\" duct soffit", 11, {fill:"#8a7c5f"}));
+
+  // ---- rect/line helpers, inch-space (divider frame, mirroring-safe) ----
+  function rectIn(x0,x1,y0,y1, style) {
+    const xa = X(x0), xb = X(x1);
+    const x = Math.min(xa,xb), w = Math.abs(xb-xa);
+    const ya = Y(y0), yb = Y(y1);
+    const y = Math.min(ya,yb), h = Math.abs(yb-ya);
+    g.appendChild(el("rect", Object.assign({x,y,width:w,height:h}, style)));
+    return {x,y,w,h};
+  }
+  function lineIn(x0,y0,x1,y1,style){
+    g.appendChild(el("line", Object.assign({x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1)}, style)));
+  }
+  // ================= STRUCTURE =================
+  rectIn(0, OPEN_W, FLOOR_Y, bottomPlateTop, {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":1});
+  const stileColor = {fill:"#d8cdb2", stroke:"#8a7a55", "stroke-width":1};
+  rectIn(xLeftStile0, xLeftStile1, bottomPlateTop, carcassTop+0.75, stileColor);
+  rectIn(xCenter0, xCenter1, bottomPlateTop, carcassTop+0.75, stileColor);
+  rectIn(xRightStile0, xRightStile1, bottomPlateTop, carcassTop+0.75, stileColor);
+  rectIn(0, OPEN_W, carcassTop, ledgeTop, {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":1});
+
+  // ================= KALLAX units =================
+  function drawKallax(x0,x1, openFace, tint) {
+    const top = carcassTop;
+    rectIn(x0,x1,bottomPlateTop,top, {fill: openFace ? "#ffffff" : (tint||"#f6f2ea"), stroke:"#555", "stroke-width":1.5});
+    const w = x1-x0;
+    const isBig = w > 50;
+    const cols = isBig ? 4 : 3;
+    const rows = 4;
+    const cellW = w/cols, cellH = (top-bottomPlateTop)/rows;
+    for (let c=1;c<cols;c++) lineIn(x0+c*cellW, bottomPlateTop, x0+c*cellW, top, {stroke: openFace?"#999":"#bbb","stroke-width":1});
+    for (let r=1;r<rows;r++) lineIn(x0, bottomPlateTop+r*cellH, x1, bottomPlateTop+r*cellH, {stroke: openFace?"#999":"#bbb","stroke-width":1});
+    if (openFace) {
+      for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+        rectIn(x0+c*cellW+0.3, x0+(c+1)*cellW-0.3, bottomPlateTop+r*cellH+0.3, bottomPlateTop+(r+1)*cellH-0.3, {fill:"#e5e0d5"});
+      }
+    }
+  }
+
+  function drawBoardBatten(x0,x1, boardColor, nBoards) {
+    const top = carcassTop;
+    if (nBoards === 1) {
+      rectIn(x0,x1,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1.5});
+    } else {
+      const mid = (x0+x1)/2;
+      rectIn(x0,mid,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1});
+      rectIn(mid,x1,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1});
+    }
+    const battenW = 2.5;
+    const battenStyle = {fill:"#faf7ef", stroke:"#9c8f6f", "stroke-width":0.75};
+    function batten(cx) {
+      rectIn(cx-battenW/2, cx+battenW/2, bottomPlateTop, top, battenStyle);
+      lineIn(cx-battenW/2, bottomPlateTop, cx-battenW/2, top, {stroke:"#c9bc9a","stroke-width":0.5});
+      lineIn(cx+battenW/2, bottomPlateTop, cx+battenW/2, top, {stroke:"#c9bc9a","stroke-width":0.5});
+    }
+    batten(x0 + battenW/2);
+    batten(x1 - battenW/2);
+    batten((x0+x1)/2);
+  }
+
+  function drawUpperPanel() {
+    rectIn(0, ceilStepAbs, ledgeTop, CEIL_HIGH, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
+    rectIn(ceilStepAbs, OPEN_W, ledgeTop, CEIL_LOW, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
+    lineIn(0, ledgeTop, OPEN_W, ledgeTop, {stroke:"#6b5d3f","stroke-width":1.5});
+  }
+
+  // ---- Assemble by side ----
+  if (!mirror) {
+    drawKallax(xK43_0, xK43_1, true, "#fff");
+    drawBoardBatten(xK44_0, xK44_1, "#f6d7dd", 2);
+    drawUpperPanel();
+    g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 (open shelves)", 11));
+    g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 backer — pink board & batten", 11));
+  } else {
+    drawKallax(xK44_0, xK44_1, true, "#fff");
+    drawBoardBatten(xK43_0, xK43_1, "#e9e3d3", 1);
+    drawUpperPanel();
+    g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 (open shelves)", 11));
+    g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 backer — board & batten (color TBD)", 11));
+  }
+  g.appendChild(text(X(ceilStepAbs/2), Y(ledgeTop)+34, mirror? "ledge ~10 3/8\" deep" : "ledge 7 11/16\" deep", 10, {fill:"#6b5d3f"}));
+
+  // ================= DIMENSIONS =================
+  // Overall opening width, along the very top
+  dim(0, OPEN_W, ROOM_H+18, "105 1/2\" opening (wall to wall)", {offset:6, size:10.5});
+  // Inside-casing span
+  dim(GAP, GAP+CASE_IN, ROOM_H+18, "104\" inside casing", {offset:22, size:9.5, color:"#a89570"});
+  // Unit widths along the bottom, below the baseboard
+  if (!mirror) {
+    dim(xK43_0, xK43_1, FLOOR_Y, "43 7/8\"", {offset:18});
+    dim(xK44_0, xK44_1, FLOOR_Y, "57 7/8\"", {offset:18});
+  } else {
+    dim(xK44_0, xK44_1, FLOOR_Y, "57 7/8\"", {offset:18});
+    dim(xK43_0, xK43_1, FLOOR_Y, "43 7/8\"", {offset:18});
+  }
+  dim(xLeftStile0, xLeftStile1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
+  dim(xCenter0, xCenter1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
+  // Heights, along the left/right edge (use whichever screen side is clear)
+  const heightBaselineX = mirror ? OPEN_W : 0;
+  vdim(FLOOR_Y, bottomPlateTop, heightBaselineX, "3/4\" base", {offset: mirror? -14:-14, size:8.5});
+  vdim(bottomPlateTop, carcassTop, heightBaselineX, "57 5/8\" carcass", {offset:-14});
+  vdim(carcassTop, ledgeTop, heightBaselineX, "3/4\" ledge", {offset:-14, size:8.5});
+  vdim(ledgeTop, CEIL_HIGH, heightBaselineX, "22 7/8\" upper (tall side)", {offset:-14, size:9});
+  const ceilBaselineX2 = ceilStepAbs;
+  vdim(ledgeTop, CEIL_LOW, ceilBaselineX2, "13 7/8\" upper (low side)", {offset:14, size:9, color:"#8a7c5f"});
+
+  // ================= FURNITURE =================
+  const fg = el("g", {id: toggleId});
+  g.appendChild(fg);
+  function rectRF(x0,x1,y0,y1,style){ // like rectR, but appends into fg (the toggleable furniture group)
+    const xa = XR(x0), xb = XR(x1);
+    const x = Math.min(xa,xb), w = Math.abs(xb-xa);
+    const ya = Y(y0), yb = Y(y1);
+    const y = Math.min(ya,yb), h = Math.abs(yb-ya);
+    fg.appendChild(el("rect", Object.assign({x,y,width:w,height:h}, style)));
+  }
+  function lineRF(x0,y0,x1,y1,style){
+    fg.appendChild(el("line", Object.assign({x1:XR(x0),y1:Y(y0),x2:XR(x1),y2:Y(y1)}, style)));
+  }
+  function dimRF(x0,x1,yBaseline,label,opts){
+    opts = opts||{};
+    const offset = opts.offset!=null?opts.offset:14;
+    const y = Y(yBaseline)+offset;
+    const xa=XR(x0), xb=XR(x1);
+    const x0s=Math.min(xa,xb), x1s=Math.max(xa,xb);
+    const stroke = opts.color||"#7a6f52";
+    fg.appendChild(el("line",{x1:x0s,y1:y,x2:x1s,y2:y,stroke,"stroke-width":1}));
+    [x0s,x1s].forEach(x=>fg.appendChild(el("line",{x1:x,y1:y-4,x2:x,y2:y+4,stroke,"stroke-width":1})));
+    [[x0,x0s],[x1,x1s]].forEach(([xin,x])=>{
+      fg.appendChild(el("line",{x1:x,y1:Y(yBaseline),x2:x,y2:y,stroke,"stroke-width":0.5,"stroke-dasharray":"2,2"}));
+    });
+    const midX=(x0s+x1s)/2;
+    fg.appendChild(el("rect",{x:midX-(label.length*2.6),y:y+2,width:label.length*5.2,height:11,fill:"#fdfcf8",opacity:0.85}));
+    const t=text(midX,y+11,label,opts.size||9.5,{fill:stroke});
+    fg.appendChild(t);
+  }
+  function textF(x,y,str,size,fopts){ const t = text(x,y,str,size,fopts); fg.appendChild(t); }
+
+  // The furniture wall sits at XR(0) by definition (XR is anchored there).
+  const wallXR = 0;
+
+  // ---- Break mark: a dashed vertical line + label marking that everything to
+  // its outer side (the furniture) is a DIFFERENT, perpendicular wall plane —
+  // not a continuation of the divider elevation. See BREAK_GAP note on XR().
+  const breakX = XR(BREAK_GAP/2); // halfway between the divider's true edge (dist=BREAK_GAP) and the wall (dist=0)
+  fg.appendChild(el("line", {x1:breakX, y1:Y(0)-6, x2:breakX, y2:Y(ROOM_H), stroke:"#999", "stroke-width":1, "stroke-dasharray":"6,4"}));
+  textF(breakX, Y(ROOM_H)+12, "↳ perpendicular wall (see plan view below)", 8.5, {fill:"#888"});
+
+  if (furniture === "bedroom") {
+    // Antique desk (44"W x 23"D footprint, drawn as elevation ~30" tall), butted
+    // against the furniture wall, right in front of the 4x4.
+    const deskH = 30, deskW = 44;
+    const d1 = wallXR, d0 = d1 - deskW;
+    rectRF(d0, d1, 0, deskH, {fill:"#7a4a2b", stroke:"#4a2c18","stroke-width":1.5});
+    rectRF(d0+2, d0+10, 4, deskH-4, {fill:"#6b4023", stroke:"#4a2c18","stroke-width":1});
+    rectRF(d1-10, d1-2, 4, deskH-4, {fill:"#6b4023", stroke:"#4a2c18","stroke-width":1});
+    // the wall itself
+    rectRF(d1, d1+4, 0, ROOM_H, {fill:"#e0d8c8", stroke:"#b8ab90","stroke-width":1});
+    textF(XR((d0+d1)/2), Y(deskH)-8, "Antique wood desk 44x23\"", 11);
+    textF(XR((d0+d1)/2), Y(0)+16, "Room A — Bedroom (painted very light pink)", 13, {fill:"#333"});
+    dimRF(d0, d1, 0, "44\" (against wall)", {offset:18});
+  }
+  if (furniture === "office") {
+    // Contiguous run, flush end to end, anchored to the wall and working back
+    // toward the divider: wall — tall Alex (against wall) — short Alex #2
+    // (flush with tall Alex, under the desktop's right side) — 79" desktop
+    // (spans the full run between the two short Alex units) — short Alex #1
+    // (under the desktop's left/far side, at the run's far end).
+    const alexW = 14.125, alexH = 27.5;
+    const tallW = alexW, tallH = 45.5;
+    const deskTopH = 29, deskLen = 79, deskThick = 1.5;
+
+    const tallX1 = wallXR, tallX0 = tallX1 - tallW;     // tall Alex against the wall
+    const alex2X1 = tallX0, alex2X0 = alex2X1 - alexW;   // short Alex #2, flush with tall Alex, under desk's right side
+    const deskX1 = alex2X1, deskX0 = deskX1 - deskLen;   // desktop, full 79" span, right edge flush with short Alex #2
+    const alex1X1 = deskX0 + alexW, alex1X0 = deskX0;     // short Alex #1, under desk's left/far side
+
+    // wall
+    rectRF(tallX1, tallX1+4, 0, ROOM_H, {fill:"#e0d8c8", stroke:"#b8ab90","stroke-width":1});
+
+    // desktop
+    rectRF(deskX0, deskX1, deskTopH, deskTopH+deskThick, {fill:"#f2f2f2", stroke:"#999","stroke-width":1});
+    // short Alex #1 (far end, under desk's left side)
+    rectRF(alex1X0, alex1X1, 0, alexH, {fill:"#fff", stroke:"#888","stroke-width":1});
+    for(let r=1;r<4;r++) lineRF(alex1X0, r*(alexH/4), alex1X1, r*(alexH/4), {stroke:"#ccc","stroke-width":0.8});
+    // short Alex #2 (flush with tall Alex, under desk's right side)
+    rectRF(alex2X0, alex2X1, 0, alexH, {fill:"#fff", stroke:"#888","stroke-width":1});
+    for(let r=1;r<4;r++) lineRF(alex2X0, r*(alexH/4), alex2X1, r*(alexH/4), {stroke:"#ccc","stroke-width":0.8});
+    // tall Alex, against the wall
+    rectRF(tallX0, tallX1, 0, tallH, {fill:"#fff", stroke:"#888","stroke-width":1.5});
+    for(let r=1;r<6;r++) lineRF(tallX0, r*(tallH/6), tallX1, r*(tallH/6), {stroke:"#ccc","stroke-width":0.8});
+    // Aeron chair, centered under the desk's kneehole (between the two short units)
+    const chairX = (alex1X1 + alex2X0)/2;
+    rectRF(chairX-6, chairX+6, 16, 34, {fill:"none", stroke:"#555","stroke-width":1.5});
+    lineRF(chairX-8, 16, chairX+8, 16, {stroke:"#555","stroke-width":1.5});
+    lineRF(chairX, 0, chairX, 16, {stroke:"#555","stroke-width":2});
+
+    textF(XR((deskX0+deskX1)/2), Y(deskTopH+deskThick)+14, "White Alex desktop 79\"", 11);
+    textF(XR(chairX)+50, Y(25), "Aeron chair", 9, {fill:"#555", anchor:"start"});
+    textF(XR((tallX0+tallX1)/2), Y(tallH)-8, "Tall Alex 45.5\"h", 10);
+    textF(XR((alex1X0+alex1X1)/2), Y(alexH)+10, "Short Alex", 9);
+    textF(XR((alex2X0+alex2X1)/2), Y(alexH)+10, "Short Alex", 9);
+    textF(XR((alex1X0+tallX1)/2), Y(0)+30, "Room B — Office", 13, {fill:"#333"});
+
+    dimRF(tallX0, tallX1, 0, "14 1/8\" (against wall)", {offset:18, size:8.5});
+    dimRF(deskX0, deskX1, 0, "79\" desktop, flush wall-to-wall with the two short Alex units", {offset:36, size:8.5});
+    dimRF(alex1X0, tallX1, tallH+6, "93 1/8\" total run, wall to far end", {offset:14, size:8.5, color:"#8a7c5f"});
+  }
+
+  document.getElementById(containerId).appendChild(svg);
+}
+
+function wireToggle(containerId, toggleCheckboxId) {
+  const cb = document.getElementById(toggleCheckboxId);
+  const apply = () => {
+    const svg = document.querySelector(`#${containerId} svg`);
+    if (!svg) return;
+    const fg = svg.querySelector(`#furn-${containerId}`);
+    if (fg) fg.style.display = cb.checked ? "" : "none";
+  };
+  cb.addEventListener("change", apply);
+  apply();
+}
+
+drawElevation("bedroom", {mirror:false, furniture:"bedroom", toggleId:"furn-bedroom"});
+drawElevation("office", {mirror:true, furniture:"office", toggleId:"furn-office"});
+wireToggle("bedroom", "toggle-bedroom-furniture");
+wireToggle("office", "toggle-office-furniture");
+
+// ============ PLAN VIEW (top-down, schematic) ============
+function drawPlan(containerId) {
+  const PXPI = 5.4;
+  // Office desk run (see the office elevation): tall Alex (14 1/8") flush against
+  // short Alex #2, under a 79" desktop, flush against short Alex #1 at the far end
+  // — 93 1/8" total from the wall.
+  const alexW = 14.125, deskLen = 79;
+  const runLength = alexW + deskLen; // 93.125" wall to the far end of short Alex #1
+  const PLAN_W_EXTRA = runLength + 10; // office-side room depth drawn beyond the divider face
+  const runFootprintDepth = 23; // how far the Alex/desktop run's drawn footprint extends sideways from the wall
+  const totalW = (FURNITURE_WALL_X + 2.5 + runFootprintDepth + 45) * PXPI; // wall + its thickness + furniture footprint + margin for right-side labels
+  const totalH = (DIVIDER_DEPTH + PLAN_W_EXTRA + 20) * PXPI;
+  const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
+  const g = el("g", {});
+  svg.appendChild(g);
+
+  // Plan coordinate frame: X = real divider-frame x (0..OPEN_W, left wall to right wall,
+  // same orientation as the BEDROOM elevation, unmirrored). Y = depth, with the divider's
+  // office-facing backer at depth 0 and the office side wall's room extending to +PLAN_W_EXTRA.
+  const marginX = 10, marginY = 12;
+  function X(xin) { return (xin + marginX) * PXPI; }
+  function Y(depth) { return (depth + marginY) * PXPI; } // depth grows downward = further into the office
+
+  function rect(x0,x1,y0,y1,style){
+    const xa=X(x0),xb=X(x1),ya=Y(y0),yb=Y(y1);
+    g.appendChild(el("rect",{x:Math.min(xa,xb),y:Math.min(ya,yb),width:Math.abs(xb-xa),height:Math.abs(yb-ya), ...style}));
+  }
+  function line(x0,y0,x1,y1,style){
+    g.appendChild(el("line",{x1:X(x0),y1:Y(y0),x2:X(x1),y2:Y(y1), ...style}));
+  }
+  function dimP(x0,x1,yBaseline,label,opts){
+    opts=opts||{};
+    const offset=opts.offset!=null?opts.offset:14;
+    const y=Y(yBaseline)+offset;
+    const xa=X(x0),xb=X(x1);
+    const xs0=Math.min(xa,xb), xs1=Math.max(xa,xb);
+    const stroke=opts.color||"#7a6f52";
+    g.appendChild(el("line",{x1:xs0,y1:y,x2:xs1,y2:y,stroke,"stroke-width":1}));
+    [xs0,xs1].forEach(x=>g.appendChild(el("line",{x1:x,y1:y-4,x2:x,y2:y+4,stroke,"stroke-width":1})));
+    const midX=(xs0+xs1)/2;
+    g.appendChild(el("rect",{x:midX-(label.length*2.6),y:y+2,width:label.length*5.2,height:11,fill:"#fdfcf8",opacity:0.9}));
+    g.appendChild(text(midX,y+11,label,9,{fill:stroke}));
+  }
+
+  // Divider footprint (depth 0 .. DIVIDER_DEPTH), full opening width
+  rect(0, OPEN_W, 0, DIVIDER_DEPTH, {fill:"#d8cdb2", stroke:"#8a7a55","stroke-width":1.5});
+  // KALLAX outlines within the divider footprint
+  rect(xK43_0, xK43_1, 0, DIVIDER_DEPTH, {fill:"none", stroke:"#8a7a55","stroke-width":1, "stroke-dasharray":"3,2"});
+  rect(xK44_0, xK44_1, 0, DIVIDER_DEPTH, {fill:"none", stroke:"#8a7a55","stroke-width":1, "stroke-dasharray":"3,2"});
+  g.appendChild(text(X((xK43_0+xK43_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x3", 9, {fill:"#6b5d3f"}));
+  g.appendChild(text(X((xK44_0+xK44_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x4", 9, {fill:"#6b5d3f"}));
+  g.appendChild(text(X(OPEN_W/2), Y(-9), "Bedroom side (above) — divider — Office side (below)", 9, {fill:"#999"}));
+
+  // Office side wall (perpendicular, at the right-stile end), running from the divider
+  // face out into the office room
+  const wallThick = 2.5;
+  const wallDepth = PLAN_W_EXTRA;
+  rect(FURNITURE_WALL_X, FURNITURE_WALL_X+wallThick, 0, wallDepth, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1});
+  g.appendChild(text(X(FURNITURE_WALL_X)+4, Y(wallDepth/2), "office side wall", 8.5, {fill:"#8a7a55", anchor:"start"}));
+
+  // Furniture run along the wall face (depth 0 = flush against the divider's far end,
+  // increasing depth = further from the divider). Tall Alex sits at the wall's near
+  // end (shallowest depth — i.e. nearest the divider corner), matching "against the
+  // wall" in the elevation view once you turn the corner from the divider face.
+  const runX0 = FURNITURE_WALL_X + wallThick, runX1 = runX0 + 23; // drawn footprint depth into the room
+  const tallD0 = 0, tallD1 = tallD0 + alexW;
+  rect(runX0, runX1, tallD0, tallD1, {fill:"#fff", stroke:"#888","stroke-width":1});
+  const alex2D0 = tallD1, alex2D1 = alex2D0 + alexW;
+  rect(runX0, runX0+22.875, alex2D0, alex2D1, {fill:"#fff", stroke:"#888","stroke-width":1});
+  const deskD0 = alex2D0, deskD1 = deskD0 + deskLen;
+  const alex1D1 = deskD1, alex1D0 = alex1D1 - alexW;
+  rect(runX0, runX0+22.875, alex1D0, alex1D1, {fill:"#fff", stroke:"#888","stroke-width":1});
+  // desktop footprint (thin, along the wall, spanning the full run)
+  rect(runX0+22.875, runX0+22.875+1.5, deskD0, deskD1, {fill:"#f2f2f2", stroke:"#999","stroke-width":1});
+
+  g.appendChild(text(X(runX1)+6, Y((tallD0+tallD1)/2)+3, "tall Alex", 8, {fill:"#666", anchor:"start"}));
+  g.appendChild(text(X(runX0+22.875)+6, Y((alex2D0+alex2D1)/2)+3, "short Alex", 8, {fill:"#666", anchor:"start"}));
+  g.appendChild(text(X(runX0+22.875)+6, Y((alex1D0+alex1D1)/2)+3, "short Alex", 8, {fill:"#666", anchor:"start"}));
+  g.appendChild(text(X(runX0+22.875+1.5)+6, Y((deskD0+deskD1)/2)+3, "79\" desktop", 8, {fill:"#999", anchor:"start"}));
+
+  dimP(0, OPEN_W, 0, "105 1/2\" opening", {offset:-18});
+  // depth dimension for the furniture run (wall to far end), drawn along the run itself
+  const dRunX = X(runX1) + 40;
+  g.appendChild(el("line", {x1:dRunX, y1:Y(0), x2:dRunX, y2:Y(deskD1), stroke:"#7a6f52", "stroke-width":1}));
+  [Y(0), Y(deskD1)].forEach(y => g.appendChild(el("line", {x1:dRunX-4, y1:y, x2:dRunX+4, y2:y, stroke:"#7a6f52", "stroke-width":1})));
+  g.appendChild(text(dRunX+8, (Y(0)+Y(deskD1))/2, "93 1/8\" run", 9, {fill:"#7a6f52", anchor:"start"}));
+
+  document.getElementById(containerId).appendChild(svg);
+}
+drawPlan("plan");
+</script>
+</body>
+</html>
