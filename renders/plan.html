@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Plan View</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Basement Wall Divider — Room Elevations &amp; Plan</h1>
+<nav class="pages">
+  <a href="index.html">Overview</a>
+  <a href="bedroom.html">Bedroom elevation</a>
+  <a href="office.html">Office elevation</a>
+  <a href="plan.html" class="current">Plan view</a>
+  <a href="section.html">Upper panel section</a>
+</nav>
+
+<div class="panel">
+<h2>Plan view (top-down, both rooms)</h2>
+<div id="plan"></div>
+<p class="note">Schematic top-down view. The divider sits between the two rooms; the bedroom desk and office Alex/desktop run each sit flush against the divider's own backer face (not against a perpendicular wall) — this view shows exactly how much of each backer/shelf they cover.</p>
+</div>
+
+<script src="geometry.js"></script>
+<script src="svg-helpers.js"></script>
+<script>
+// Coordinate frame: X = real divider-frame x (0..OPEN_W, same orientation as
+// the BEDROOM elevation / unmirrored). Y = depth: the divider footprint sits
+// centered, bedroom-side furniture projects UP (negative depth, toward the
+// bedroom) and office-side furniture projects DOWN (positive depth, toward
+// the office) — both furniture pieces are flush against the divider's own
+// backer face, not a perpendicular wall, so they read as parallel strips here.
+function drawPlan(containerId) {
+  const PXPI = 5.6;
+  const bedFurnDepth = BED_DESK_D;      // 23", projecting up into the bedroom
+  const officeFurnDepth = DESK_DEPTH;   // 22 7/8", projecting down into the office
+  const marginX = 14, marginTop = bedFurnDepth + 14, marginBottom = officeFurnDepth + 14;
+  const totalW = (OPEN_W + marginX*2) * PXPI;
+  const totalH = (DIVIDER_DEPTH + marginTop + marginBottom) * PXPI;
+  const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
+  const g = el("g", {});
+  svg.appendChild(g);
+
+  function X(xin) { return (xin + marginX) * PXPI; }
+  function Y(depth) { return (depth + marginTop) * PXPI; }
+  const { rect, line } = boundDrawers(X, Y, g);
+  const dimP = dimLineFactory(X, Y, g);
+
+  g.appendChild(text(X(OPEN_W/2), Y(-bedFurnDepth)-26, "Bedroom (Room A)", 10, {fill:"#999"}));
+  g.appendChild(text(X(OPEN_W/2), Y(DIVIDER_DEPTH+officeFurnDepth)+14, "Office (Room B)", 10, {fill:"#999"}));
+
+  // Divider footprint
+  rect(0, OPEN_W, 0, DIVIDER_DEPTH, {fill:"#d8cdb2", stroke:"#8a7a55","stroke-width":1.5});
+  rect(xK43_0, xK43_1, 0, DIVIDER_DEPTH, {fill:"none", stroke:"#8a7a55","stroke-width":1, "stroke-dasharray":"3,2"});
+  rect(xK44_0, xK44_1, 0, DIVIDER_DEPTH, {fill:"none", stroke:"#8a7a55","stroke-width":1, "stroke-dasharray":"3,2"});
+  g.appendChild(text(X((xK43_0+xK43_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x3", 9, {fill:"#6b5d3f"}));
+  g.appendChild(text(X((xK44_0+xK44_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x4", 9, {fill:"#6b5d3f"}));
+
+  // Side wall
+  const wallThick = 2.5;
+  rect(SIDE_WALL_X, SIDE_WALL_X+wallThick, -bedFurnDepth-4, DIVIDER_DEPTH+officeFurnDepth+4, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1});
+  g.appendChild(text(X(SIDE_WALL_X)+4, Y(DIVIDER_DEPTH/2), "side wall", 8, {fill:"#8a7a55", anchor:"start"}));
+
+  // Bedroom desk footprint
+  rect(bedDeskX0, bedDeskX1, -BED_DESK_D, 0, {fill:"#fde9c8", stroke:"#a97e1f","stroke-width":1.5});
+  g.appendChild(text(X((bedDeskX0+bedDeskX1)/2), Y(-BED_DESK_D/2)+3, "Desk 44x23\"", 9, {fill:"#8a6011"}));
+  if (bedDeskX0 > xK44_0) {
+    g.appendChild(text(X((xK44_0+bedDeskX0)/2), Y(-4), `${(bedDeskX0-xK44_0).toFixed(1)}" backer exposed`, 8, {fill:"#c47a3f"}));
+  }
+
+  // Office run footprint
+  const runD0 = DIVIDER_DEPTH, runD1 = DIVIDER_DEPTH + DESK_DEPTH;
+  rect(officeRunX0, officeRunX1, runD0, runD1, {fill:"#cfe0f0", stroke:"#3f6a8a","stroke-width":1.5});
+  g.appendChild(text(X((officeRunX0+officeRunX1)/2), Y(runD0+DESK_DEPTH/2)+3, "Alex + desktop run 93 1/8\"", 9, {fill:"#2d4d66"}));
+  if (officeRunX0 > xK43_0) {
+    g.appendChild(text(X((xK43_0+officeRunX0)/2), Y(runD0+DESK_DEPTH+12), `${(officeRunX0-xK43_0).toFixed(1)}" shelving stays open`, 8, {fill:"#4a7a9c"}));
+  }
+
+  dimP(0, OPEN_W, -bedFurnDepth, "105 1/2\" opening", {offset:-16});
+
+  document.getElementById(containerId).appendChild(svg);
+}
+drawPlan("plan");
+</script>
+</body>
+</html>

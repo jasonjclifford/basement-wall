@@ -1,0 +1,23 @@
+body { font-family: -apple-system, Helvetica, Arial, sans-serif; background:#f0ede8; margin:0; padding:24px; }
+h1 { font-size:20px; margin:0 0 4px; }
+h2 { font-size:15px; margin:32px 0 6px; color:#333; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.meta { color:#666; font-size:12px; margin-bottom:18px; }
+.panel { background:#fff; border:1px solid #ccc; border-radius:6px; padding:12px; margin-bottom:28px; }
+svg { display:block; width:100%; height:auto; }
+/* Narrow/tall drawings (e.g. a side-view section) shouldn't stretch to the
+   full panel width — that blows them up to an absurd rendered height. Cap
+   and center them instead; wrap the <svg> in <div class="svg-narrow"> to
+   opt in. */
+.svg-narrow { display:flex; justify-content:center; }
+.svg-narrow svg { width:auto; max-width:100%; height:420px; }
+@media (max-width: 500px) { .svg-narrow svg { height:320px; } }
+.toggle-row { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:normal; color:#555; }
+.toggle-row input { cursor:pointer; }
+.note { color:#8a7c5f; font-size:11.5px; margin:6px 0 0; }
+.status ul { margin:6px 0 0; padding-left:20px; }
+.status li { margin:4px 0; }
+.status .open { color:#a15c1f; }
+nav.pages { display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 18px; }
+nav.pages a { font-size:13px; padding:6px 12px; border-radius:5px; background:#fff; border:1px solid #ccc; color:#444; text-decoration:none; }
+nav.pages a.current { background:#5a5245; color:#fff; border-color:#5a5245; }
+nav.pages a:hover { border-color:#8a7a55; }

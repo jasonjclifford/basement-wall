@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Upper Panel Section</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Basement Wall Divider — Room Elevations &amp; Plan</h1>
+<nav class="pages">
+  <a href="index.html">Overview</a>
+  <a href="bedroom.html">Bedroom elevation</a>
+  <a href="office.html">Office elevation</a>
+  <a href="plan.html">Plan view</a>
+  <a href="section.html" class="current">Upper panel section</a>
+</nav>
+
+<div class="panel">
+<h2>Side-view section — upper panel &amp; cleats (tall side, 22 7/8")</h2>
+<div class="svg-narrow"><div id="section-tall"></div></div>
+<p class="note">Cut vertically through the divider's depth, at the 82"-ceiling (tall) portion of the opening — the left 28 1/2" of the run. Bedroom is to the left, office to the right in this view.</p>
+</div>
+
+<div class="panel">
+<h2>Side-view section — upper panel &amp; cleats (low side, 13 7/8")</h2>
+<div class="svg-narrow"><div id="section-low"></div></div>
+<p class="note">Same cut, at the 73"-ceiling (low, soffit-dropped) portion of the opening — the remaining 77" of the run.</p>
+</div>
+
+<script src="geometry.js"></script>
+<script src="svg-helpers.js"></script>
+<script>
+// Coordinate frame: X = depth into the room (0 = bedroom-facing backer plane,
+// DIVIDER_DEPTH = office-facing backer plane), Y = height (0 = top-plate top /
+// ledgeTop, growing up to the ceiling). This is a SIDE view — a vertical cut
+// through the divider's depth — not a room-facing elevation like bedroom.html
+// / office.html, so it uses its own small coordinate setup rather than
+// elevation.js.
+function drawSection(containerId, ceilHeight, label) {
+  const PXPI = 13;
+  const panelZoneH = ceilHeight - ledgeTop; // height from the ledge (top plate top) to the ceiling
+  // marginR is wider than marginL: the right side carries the OFFICE room label
+  // plus the overall-height dimension line and its text label, both of which
+  // need real screen width beyond the divider depth itself.
+  const marginL = 4, marginR = 9.5, marginBottom = 6, marginTop = 10;
+  const totalW = (DIVIDER_DEPTH + marginL + marginR) * PXPI;
+  const totalH = (panelZoneH + marginTop + marginBottom) * PXPI;
+  const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
+  const g = el("g", {});
+  svg.appendChild(g);
+
+  function X(depth) { return (depth + marginL) * PXPI; }       // 0 = bedroom face, DIVIDER_DEPTH = office face
+  function Y(h) { return totalH - (h + marginBottom) * PXPI; } // 0 = ledgeTop (top plate top), grows up
+  const { rect, line } = boundDrawers(X, Y, g);
+  const dim = dimLineFactory(X, Y, g);
+  const vdim = vDimLineFactory(X, Y, g);
+
+  g.appendChild(text(X(0)-18, Y(panelZoneH*0.5), "BEDROOM", 9, {fill:"#999", anchor:"middle", attrs:{transform:`rotate(-90 ${X(0)-18} ${Y(panelZoneH*0.5)})`}}));
+  g.appendChild(text(X(DIVIDER_DEPTH)+18, Y(panelZoneH*0.5), "OFFICE", 9, {fill:"#999", anchor:"middle", attrs:{transform:`rotate(-90 ${X(DIVIDER_DEPTH)+18} ${Y(panelZoneH*0.5)})`}}));
+
+  // ---- Top plate (the divider's structural top, full depth) ----
+  const topPlateH = 0.75;
+  rect(0, DIVIDER_DEPTH, -topPlateH, 0, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1.5});
+  g.appendChild(text(X(DIVIDER_DEPTH/2), Y(-topPlateH/2)+3, "top plate (3/4\")", 8.5, {fill:"#6b5d3f"}));
+
+  // ---- Ceiling ----
+  rect(-2, DIVIDER_DEPTH+2, panelZoneH, panelZoneH+2, {fill:"#e4ddce", stroke:"#a8977a","stroke-width":1});
+  g.appendChild(text(X(DIVIDER_DEPTH/2), Y(panelZoneH+1)+3, "ceiling", 8.5, {fill:"#8a7c5f"}));
+
+  // ---- Upper panel: 1/2" MDF, centred in depth -> 7 11/16" ledge each side.
+  // Labeled with a leader line to a callout above, rather than text INSIDE the
+  // panel — the panel is only 1/2" wide on screen at this scale, far too
+  // narrow to hold a legible in-place label. ----
+  const panelX0 = LEDGE_DEPTH, panelX1 = LEDGE_DEPTH + UPPER_PANEL_THICK; // centred
+  rect(panelX0, panelX1, 0, panelZoneH, {fill:"#efe9dc", stroke:"#6b5d3f","stroke-width":1.5});
+  const panelMidX = (panelX0+panelX1)/2, panelMidY = panelZoneH*0.62;
+  line(panelMidX, panelMidY, panelMidX-3.4, panelMidY+2.5, {stroke:"#6b5d3f","stroke-width":0.75});
+  g.appendChild(text(X(panelMidX-3.6), Y(panelMidY+2.5), "1/2\" MDF panel", 8, {fill:"#6b5d3f", anchor:"end"}));
+
+  // ---- Cleats: 3/4" x 1 1/2", one per face at the top plate, one per face at
+  // the ceiling — four runs total. Also called out with leader lines instead
+  // of in-place labels (same reason: too small on screen to hold text). ----
+  const cleatColor = {fill:"#d8cdb2", stroke:"#8a7a55","stroke-width":1};
+  rect(panelX0-CLEAT_W, panelX0, 0, CLEAT_H, cleatColor); // bedroom-face, at top plate
+  rect(panelX1, panelX1+CLEAT_W, 0, CLEAT_H, cleatColor); // office-face, at top plate
+  rect(panelX0-CLEAT_W, panelX0, panelZoneH-CLEAT_H, panelZoneH, cleatColor); // bedroom-face, at ceiling
+  rect(panelX1, panelX1+CLEAT_W, panelZoneH-CLEAT_H, panelZoneH, cleatColor); // office-face, at ceiling
+
+  const cleatMid = CLEAT_H/2;
+  line(panelX0-CLEAT_W/2, cleatMid, panelX0-CLEAT_W-2.5, cleatMid-3, {stroke:"#6b5d3f","stroke-width":0.75});
+  g.appendChild(text(X(panelX0-CLEAT_W-2.6), Y(cleatMid-3), "cleat (x4)", 8, {fill:"#6b5d3f", anchor:"end"}));
+
+  // ---- Dimensions ----
+  dim(0, DIVIDER_DEPTH, -topPlateH, "15 7/8\" divider depth", {offset:22, size:9});
+  dim(0, panelX0, panelZoneH+2, "7 11/16\" ledge", {offset:14, size:8.5, color:"#8a7c5f"});
+  dim(panelX1, DIVIDER_DEPTH, panelZoneH+2, "7 11/16\" ledge", {offset:14, size:8.5, color:"#8a7c5f"});
+  vdim(0, panelZoneH, DIVIDER_DEPTH, label, {offset:44, size:9});
+  vdim(0, CLEAT_H, 0, "1 1/2\"", {offset:6, size:7.5, color:"#8a7c5f"});
+
+  document.getElementById(containerId).appendChild(svg);
+}
+drawSection("section-tall", 82, "22 7/8\" (tall side)");
+drawSection("section-low", 73, "13 7/8\" (low side)");
+</script>
+</body>
+</html>

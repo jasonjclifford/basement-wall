@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bedroom Elevation</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Basement Wall Divider — Room Elevations &amp; Plan</h1>
+<nav class="pages">
+  <a href="index.html">Overview</a>
+  <a href="bedroom.html" class="current">Bedroom elevation</a>
+  <a href="office.html">Office elevation</a>
+  <a href="plan.html">Plan view</a>
+  <a href="section.html">Upper panel section</a>
+</nav>
+
+<div class="panel">
+<h2>Bedroom (Room A) — view facing the divider
+  <label class="toggle-row"><input type="checkbox" id="toggle-furniture" checked> Show furniture</label>
+</h2>
+<div id="bedroom"></div>
+<p class="note">The desk sits directly against this wall (in front of the divider, between the divider and the viewer) — drawn here as an overlay in front of the 4x4 backer it's pushed up against. See the <a href="plan.html">plan view</a> for the true top-down footprint.</p>
+</div>
+
+<script src="geometry.js"></script>
+<script src="svg-helpers.js"></script>
+<script src="elevation.js"></script>
+<script>
+function drawBedroomFurniture({ X, Y, rectF, lineF, dimF, textF, ROOM_H }) {
+  const deskH = 30;
+  rectF(bedDeskX0, bedDeskX1, 0, deskH, {fill:"#7a4a2b", stroke:"#4a2c18","stroke-width":1.5});
+  rectF(bedDeskX0+2, bedDeskX0+10, 4, deskH-4, {fill:"#6b4023", stroke:"#4a2c18","stroke-width":1});
+  rectF(bedDeskX1-10, bedDeskX1-2, 4, deskH-4, {fill:"#6b4023", stroke:"#4a2c18","stroke-width":1});
+  textF(X((bedDeskX0+bedDeskX1)/2), Y(deskH)-8, "Antique wood desk 44\"x23\", against wall (right) and 4x4 backer (behind)", 10.5);
+  dimF(bedDeskX0, bedDeskX1, 0, "44\"", {offset:18});
+  lineF(bedDeskX1, 0, bedDeskX1, ROOM_H, {stroke:"#999","stroke-width":1,"stroke-dasharray":"5,3"});
+  textF(X(bedDeskX1)-4, Y(ROOM_H*0.7), "side wall →", 8.5, {fill:"#888", anchor:"end"});
+}
+
+drawElevation("bedroom", {mirror:false, drawFurniture: drawBedroomFurniture, toggleId:"furn"});
+wireToggle("bedroom", "toggle-furniture", "furn");
+</script>
+</body>
+</html>
