@@ -13,6 +13,7 @@
   <a href="office.html">Office elevation</a>
   <a href="plan.html" class="current">Plan view</a>
   <a href="section.html">Upper panel section</a>
+  <a href="framing.html">Ladder framing</a>
 </nav>
 
 <div class="panel">
@@ -24,12 +25,16 @@
 <script src="geometry.js"></script>
 <script src="svg-helpers.js"></script>
 <script>
-// Coordinate frame: X = real divider-frame x (0..OPEN_W, same orientation as
-// the BEDROOM elevation / unmirrored). Y = depth: the divider footprint sits
-// centered, bedroom-side furniture projects UP (negative depth, toward the
-// bedroom) and office-side furniture projects DOWN (positive depth, toward
-// the office) — both furniture pieces are flush against the divider's own
-// backer face, not a perpendicular wall, so they read as parallel strips here.
+// Coordinate frame: X = real divider-frame x (0..OPEN_W), MIRRORED so this
+// view reads 4x4-left/4x3-right — matching how office.html shows them — for
+// both rows (this is a deliberate choice: it makes the plan easy to compare
+// against either elevation page, at the cost of the top and bottom rows no
+// longer sharing one true physical left-right axis; see CLAUDE.md). Y = depth:
+// the divider footprint sits centered, bedroom-side furniture projects UP
+// (negative depth, toward the bedroom) and office-side furniture projects
+// DOWN (positive depth, toward the office) — both furniture pieces are flush
+// against the divider's own backer face, not a perpendicular wall, so they
+// read as parallel strips here.
 function drawPlan(containerId) {
   const PXPI = 5.6;
   const bedFurnDepth = BED_DESK_D;      // 23", projecting up into the bedroom
@@ -41,7 +46,10 @@ function drawPlan(containerId) {
   const g = el("g", {});
   svg.appendChild(g);
 
-  function X(xin) { return (xin + marginX) * PXPI; }
+  // Mirrored so this view reads left-right the same way both elevation pages
+  // do (4x4 on the left, 4x3 on the right — see office.html) — real-x OPEN_W
+  // lands at screen-left, real-x 0 at screen-right.
+  function X(xin) { return (marginX + (OPEN_W - xin)) * PXPI; }
   function Y(depth) { return (depth + marginTop) * PXPI; }
   const { rect, line } = boundDrawers(X, Y, g);
   const dimP = dimLineFactory(X, Y, g);
@@ -59,7 +67,7 @@ function drawPlan(containerId) {
   // Side wall
   const wallThick = 2.5;
   rect(SIDE_WALL_X, SIDE_WALL_X+wallThick, -bedFurnDepth-4, DIVIDER_DEPTH+officeFurnDepth+4, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1});
-  g.appendChild(text(X(SIDE_WALL_X)+4, Y(DIVIDER_DEPTH/2), "side wall", 8, {fill:"#8a7a55", anchor:"start"}));
+  g.appendChild(text(X(SIDE_WALL_X+wallThick)-4, Y(DIVIDER_DEPTH/2), "side wall", 8, {fill:"#8a7a55", anchor:"end"}));
 
   // Bedroom desk footprint
   rect(bedDeskX0, bedDeskX1, -BED_DESK_D, 0, {fill:"#fde9c8", stroke:"#a97e1f","stroke-width":1.5});

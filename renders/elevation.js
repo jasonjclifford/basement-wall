@@ -19,6 +19,12 @@ function drawElevation(containerId, opts) {
   function X(xin) {
     return (MARGIN + (mirror ? (OPEN_W - xin) : xin)) * PXPI;
   }
+  // Xu: UNMIRRORED screen-x — real-x always increases left-to-right, regardless
+  // of `mirror`. Furniture (the desk, the Alex/desktop run) always sits against
+  // the SAME physical wall (SIDE_WALL_X, the divider's right-stile end) and
+  // should always render on the same screen side in both rooms' elevations —
+  // so furniture uses Xu, not the divider-mirroring-aware X.
+  function Xu(xin) { return (MARGIN + xin) * PXPI; }
   function Y(yin) { return totalH - (yin + 12) * PXPI; }
 
   const g = el("g", {});
@@ -132,10 +138,13 @@ function drawElevation(containerId, opts) {
   }
   dim(xLeftStile0, xLeftStile1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
   dim(xCenter0, xCenter1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
-  // Height dimensions go at real-x=0 — the side wall and furniture run always sit
-  // at the OTHER end (real-x near OPEN_W) regardless of mirroring, so x=0 stays
-  // clear of the furniture overlay in both views.
-  const heightBaselineX = 0;
+  // Height dimensions go on whichever real-x end stays clear of the furniture
+  // overlay. Furniture always renders on SCREEN-RIGHT now (it's drawn with an
+  // unmirrored Xu — see below — so it always sits toward high real-x on
+  // screen, regardless of `mirror`). The clear screen-left side is real-x=0
+  // unmirrored, but real-x=OPEN_W once mirrored (mirroring flips which real
+  // coordinate lands on which screen side).
+  const heightBaselineX = mirror ? OPEN_W : 0;
   vdim(FLOOR_Y, bottomPlateTop, heightBaselineX, "3/4\" base", {offset:-14, size:8.5});
   vdim(bottomPlateTop, carcassTop, heightBaselineX, "57 5/8\" carcass", {offset:-14});
   vdim(carcassTop, ledgeTop, heightBaselineX, "3/4\" ledge", {offset:-14, size:8.5});
@@ -143,14 +152,16 @@ function drawElevation(containerId, opts) {
   vdim(ledgeTop, CEIL_LOW, ceilStepAbs, "13 7/8\" upper (low side)", {offset:14, size:9, color:"#8a7c5f"});
 
   // ================= FURNITURE (drawn IN FRONT of the divider — same picture
-  // plane, parallel to it, not on a perpendicular wall) =================
+  // plane, parallel to it, not on a perpendicular wall). Uses Xu (unmirrored)
+  // rather than X, so furniture against the same physical wall (SIDE_WALL_X)
+  // always renders on the same screen side in both rooms' elevations. =================
   const fg = el("g", {id: toggleId});
   g.appendChild(fg);
-  const { rect: rectF, line: lineF } = boundDrawers(X, Y, fg);
-  const dimF = dimLineFactory(X, Y, fg);
+  const { rect: rectF, line: lineF } = boundDrawers(Xu, Y, fg);
+  const dimF = dimLineFactory(Xu, Y, fg);
   function textF(x,y,str,size,fopts){ fg.appendChild(text(x,y,str,size,fopts)); }
 
-  if (drawFurniture) drawFurniture({ X, Y, rectF, lineF, dimF, textF, ROOM_H });
+  if (drawFurniture) drawFurniture({ X: Xu, Y, rectF, lineF, dimF, textF, ROOM_H });
 
   document.getElementById(containerId).appendChild(svg);
 }
