@@ -17,11 +17,11 @@ svg { display:block; width:100%; height:auto; }
 .wall-detail-row { display:flex; justify-content:center; align-items:flex-end; gap:36px; flex-wrap:wrap; }
 .wall-detail-row svg { width:auto; height:360px; max-width:100%; }
 .wall-detail-row > div { text-align:center; }
-.fig-caption { color:#8a7c5f; font-size:10.5px; margin:4px 0 0; }
+.fig-caption { color:#8a7c5f; font-size:13px; margin:4px 0 0; }
 @media (max-width: 500px) { .wall-detail-row svg { height:280px; } }
 .toggle-row { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:normal; color:#555; }
 .toggle-row input { cursor:pointer; }
-.note { color:#8a7c5f; font-size:11.5px; margin:6px 0 0; }
+.note { color:#8a7c5f; font-size:14px; margin:6px 0 0; line-height:1.4; }
 .status ul { margin:6px 0 0; padding-left:20px; }
 .status li { margin:4px 0; }
 .status .open { color:#a15c1f; }

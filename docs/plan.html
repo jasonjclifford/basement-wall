@@ -72,8 +72,36 @@ function drawPlan(containerId) {
   rect(0, OPEN_W, 0, DIVIDER_DEPTH, {fill:"#d8cdb2", stroke:"#8a7a55","stroke-width":1.5});
   rect(xK43_0, xK43_1, 0, DIVIDER_DEPTH, {fill:"none", stroke:"#8a7a55","stroke-width":1, "stroke-dasharray":"3,2"});
   rect(xK44_0, xK44_1, 0, DIVIDER_DEPTH, {fill:"none", stroke:"#8a7a55","stroke-width":1, "stroke-dasharray":"3,2"});
+
+  // ---- Board & batten backer faces — each KALLAX's shelves open to one room
+  // (per prompt.md) so its backer, and the board & batten facing it, is on
+  // the OPPOSITE depth edge: 4x3 shelves open to the bedroom (depth 0) so its
+  // backer/batten face the office (depth DIVIDER_DEPTH); 4x4 shelves open to
+  // the office so its backer/batten face the bedroom (depth 0). Drawn as a
+  // thin backer strip plus batten tick marks at each outer edge + centre,
+  // matching elevation.js's drawBoardBatten (3 battens/face, 1x3 = 3/4" wide).
+  const backerT = 1.4; // drawn thickness of the backer strip — exaggerated beyond the real 1/4" so it reads clearly at this scale
+  const battenW = 0.75;
+  function drawBackerFace(x0, x1, atOfficeSide, nBoards, fillColor) {
+    const d0 = atOfficeSide ? DIVIDER_DEPTH - backerT : 0;
+    const d1 = atOfficeSide ? DIVIDER_DEPTH : backerT;
+    rect(x0, x1, d0, d1, {fill: fillColor, stroke:"#6b5d3f","stroke-width":1.25});
+    if (nBoards === 2) {
+      const mid = (x0+x1)/2;
+      line(mid, d0, mid, d1, {stroke:"#6b5d3f","stroke-width":1});
+    }
+    // Battens: one at each outer edge, one centred — same convention as the elevations.
+    [x0 + battenW/2, (x0+x1)/2, x1 - battenW/2].forEach(cx => {
+      rect(cx-battenW/2, cx+battenW/2, d0, d1, {fill:"#faf7ef", stroke:"#9c8f6f","stroke-width":0.6});
+    });
+  }
+  drawBackerFace(xK43_0, xK43_1, true, 1, "#cfe0f0");   // 4x3 backer faces the office, 1 board — tinted to match the office's blue elsewhere on this page
+  drawBackerFace(xK44_0, xK44_1, false, 2, "#f6d7dd");  // 4x4 backer faces the bedroom, 2 boards (pink)
+
   g.appendChild(text(X((xK43_0+xK43_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x3", 9, {fill:"#6b5d3f"}));
   g.appendChild(text(X((xK44_0+xK44_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x4", 9, {fill:"#6b5d3f"}));
+  g.appendChild(text(X((xK43_0+xK43_1)/2), Y(DIVIDER_DEPTH-backerT/2)+3, "board & batten → office", 8, {fill:"#2d4d66"}));
+  g.appendChild(text(X((xK44_0+xK44_1)/2), Y(backerT/2)+3, "board & batten → bedroom", 8, {fill:"#8a4a5a"}));
 
   // Side wall
   const wallThick = 2.5;
