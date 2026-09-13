@@ -14,6 +14,7 @@
   <a href="plan.html">Plan view</a>
   <a href="section.html">Upper panel section</a>
   <a href="framing.html">Ladder framing</a>
+  <a href="reference.html">Build reference</a>
 </nav>
 
 <div class="panel">
@@ -21,7 +22,7 @@
   <label class="toggle-row"><input type="checkbox" id="toggle-furniture" checked> Show furniture</label>
 </h2>
 <div id="office"></div>
-<p class="note">The Alex/desktop run sits directly against this wall (in front of the divider, between the divider and the viewer) — drawn here as an overlay in front of the KALLAX units it's pushed up against. See the <a href="plan.html">plan view</a> for the true top-down footprint.</p>
+<p class="note">Screen-right is the external (foundation) wall; screen-left is the internal wall — the Alex/desktop run sits directly against the internal wall (in front of the divider, between the divider and the viewer) — drawn here as an overlay in front of the KALLAX units it's pushed up against. See the <a href="plan.html">plan view</a> for the true top-down footprint.</p>
 </div>
 
 <script src="geometry.js"></script>
@@ -50,14 +51,19 @@ function drawOfficeFurniture({ X, Y, rectF, lineF, dimF, textF, ROOM_H }) {
 
   textF(X((deskX0+deskX1)/2), Y(deskTopH+deskThick)+14, "White Alex desktop 79\"", 11);
   textF(X(chairX), Y(45), "Aeron chair", 9, {fill:"#555"});
-  textF(X((tallX0+tallX1)/2), Y(ALEX_H_TALL)-8, "Tall Alex 45.5\"h, against side wall", 9);
+  textF(X((tallX0+tallX1)/2), Y(ALEX_H_TALL)-8, "Tall Alex 45.5\"h, against internal wall", 9);
   textF(X((alex1X0+alex1X1)/2), Y(ALEX_H_SHORT)+10, "Short Alex", 9);
   textF(X((alex2X0+alex2X1)/2), Y(ALEX_H_SHORT)+10, "Short Alex", 9);
 
   dimF(tallX0, tallX1, 0, "14 1/8\"", {offset:18, size:8.5});
-  dimF(alex1X0, tallX1, 0, "93 1/8\" total run, against divider + side wall", {offset:52, size:8.5});
+  dimF(alex1X0, tallX1, 0, "93 1/8\" total run, against divider + internal wall", {offset:52, size:8.5});
   lineF(tallX1, 0, tallX1, ROOM_H, {stroke:"#999","stroke-width":1,"stroke-dasharray":"5,3"});
-  textF(X(tallX1)-4, Y(ROOM_H*0.92), "side wall →", 8.5, {fill:"#888", anchor:"end"});
+  // Fixed at carcassTop+3 (just above the furniture, well below the low-side
+  // ceiling zone where "9" duct soffit" sits near the top) rather than a
+  // fraction of ROOM_H — this side of the opening is the low-ceiling zone,
+  // so a fraction of the tall-side ceiling height doesn't reliably land
+  // clear of that label.
+  textF(X(tallX1)-4, Y(carcassTop+3), "internal wall →", 8.5, {fill:"#888", anchor:"end"});
 }
 
 drawElevation("office", {mirror:true, drawFurniture: drawOfficeFurniture, toggleId:"furn"});

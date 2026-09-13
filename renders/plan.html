@@ -14,6 +14,7 @@
   <a href="plan.html" class="current">Plan view</a>
   <a href="section.html">Upper panel section</a>
   <a href="framing.html">Ladder framing</a>
+  <a href="reference.html">Build reference</a>
 </nav>
 
 <div class="panel">
@@ -57,11 +58,11 @@ function drawPlan(containerId) {
   // The office row alone un-mirrors back to real-x order (X's mirror undone),
   // so the Alex/desktop run reads left-to-right exactly as it does standing
   // in the office looking at the divider — gap, desk-on-short-Alexes, tall
-  // Alex against the side wall — landing screen-right, same side office.html
-  // draws it. This intentionally breaks from the bedroom row / KALLAX
-  // labeling, which stay on the plan's normal mirrored axis (side wall stays
-  // drawn screen-left there) — see prompt.md's room-contents section for the
-  // office's actual left-to-right order this mirrors.
+  // Alex against the internal wall — landing screen-right, same side
+  // office.html draws it. This intentionally breaks from the bedroom row /
+  // KALLAX labeling, which stay on the plan's normal mirrored axis (internal
+  // wall stays drawn screen-left there) — see prompt.md's room-contents
+  // section for the office's actual left-to-right order this mirrors.
   function Xoffice(xin) { return (marginX + xin) * PXPI; }
   const { rect: rectOffice } = boundDrawers(Xoffice, Y, g);
 
@@ -103,10 +104,11 @@ function drawPlan(containerId) {
   g.appendChild(text(X((xK43_0+xK43_1)/2), Y(DIVIDER_DEPTH-backerT/2)+3, "board & batten → office", 8, {fill:"#2d4d66"}));
   g.appendChild(text(X((xK44_0+xK44_1)/2), Y(backerT/2)+3, "board & batten → bedroom", 8, {fill:"#8a4a5a"}));
 
-  // Side wall
+  // Internal wall — bedroom's right wall / office's left wall, the same
+  // physical wall the furniture butts against (see geometry.js).
   const wallThick = 2.5;
-  rect(SIDE_WALL_X, SIDE_WALL_X+wallThick, -bedFurnDepth-4, DIVIDER_DEPTH+officeFurnDepth+4, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1});
-  g.appendChild(text(X(SIDE_WALL_X+wallThick)-4, Y(DIVIDER_DEPTH/2), "side wall", 8, {fill:"#8a7a55", anchor:"end"}));
+  rect(INTERNAL_WALL_X, INTERNAL_WALL_X+wallThick, -bedFurnDepth-4, DIVIDER_DEPTH+officeFurnDepth+4, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1});
+  g.appendChild(text(X(INTERNAL_WALL_X+wallThick)-4, Y(DIVIDER_DEPTH/2), "internal wall", 8, {fill:"#8a7a55", anchor:"end"}));
 
   // Bedroom desk footprint
   rect(bedDeskX0, bedDeskX1, -BED_DESK_D, 0, {fill:"#fde9c8", stroke:"#a97e1f","stroke-width":1.5});
@@ -124,7 +126,7 @@ function drawPlan(containerId) {
     g.appendChild(text(Xoffice((xK43_0+officeRunX0)/2), Y(runD0+DESK_DEPTH+12), `${(officeRunX0-xK43_0).toFixed(1)}" shelving stays open`, 8, {fill:"#4a7a9c"}));
   }
 
-  dimP(0, OPEN_W, -bedFurnDepth, "105 1/2\" opening", {offset:-16});
+  dimP(0, OPEN_W, -bedFurnDepth, `${inchLabel(OPEN_W)} opening`, {offset:-16});
 
   document.getElementById(containerId).appendChild(svg);
 }

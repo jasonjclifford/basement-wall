@@ -15,8 +15,8 @@ break that fit, so measure the actual worst case, not a best-case or average.
 
 | Measurement | Assumed | Actual (floor) | Actual (mid ~40") | Actual (near ceiling) |
 |---|---|---|---|---|
-| Wall-to-wall width | 105 1/2" | | | |
-| Inside-casing width | 104" | | | |
+| Wall-to-wall width | 105 1/2" | | 106 1/8 at height of kallax | |
+| Inside-casing width | 104" | confirmed 104 | not sure how to take this measurement or the next | |
 
 Note the **narrowest** reading — walls are rarely plumb.
 
@@ -24,10 +24,10 @@ Note the **narrowest** reading — walls are rarely plumb.
 
 | Measurement | Assumed | KALLAX 4x4 actual | KALLAX 4x3 actual |
 |---|---|---|---|
-| Width (top of carcass) | 57 7/8" / 43 7/8" | | |
-| Width (bottom of carcass) | same | | |
-| Depth | 15 3/8" (both) | | |
-| Height | 57 5/8" (both) | | |
+| Width (top of carcass) | 57 7/8" / 43 7/8" | 57 7/8 | 44 |
+| Width (bottom of carcass) | same | 57 13/16 | 44 |
+| Depth | 15 3/8" (both) | 15 7/16 | 15 7/16 |
+| Height | 57 5/8" (both) | 57 5/8, 57 11/16 | 57 11/16 |
 
 Note if the two units differ from each other even though they're the same
 product family — flat-pack particleboard can bow.
@@ -36,24 +36,26 @@ product family — flat-pack particleboard can bow.
 
 | Measurement | Assumed | Actual |
 |---|---|---|
-| Distance from left wall to ceiling step | 28 1/2" | |
-| Tall-side ceiling height (at a few points) | 82" | |
-| Low-side ceiling height (at a few points) | 73" | |
+| Distance from left wall to ceiling step | 28 1/2" | 28 3/4 |
+| Tall-side ceiling height (at a few points) | 82" | 82 1/8 |
+| Low-side ceiling height (at a few points) | 73" | 73 1/4, 73 1/4, 73 1/2 (at tall side edge) |
 | Step is a clean vertical face (not angled/soffit return)? | yes | |
+
+low side ceiling width 77 1/4
 
 ## 4. Baseboard and casing — governs the 3/4" side gap
 
 | Measurement | Assumed | Left wall actual | Right wall actual |
 |---|---|---|---|
-| Baseboard thickness proud of wall | 5/8" | | |
-| Casing thickness proud of wall | 3/4" | | |
+| Baseboard thickness proud of wall | 5/8" | not sure what this measurement is exactly | |
+| Casing thickness proud of wall | 3/4" | 3/4  | |
 
 ## 5. Wall depth / projection — currently unresolved in prompt.md
 
 | Measurement | Actual (left wall) | Actual (right wall) |
 |---|---|---|
-| Stud-to-drywall-face thickness at the opening | | |
-| Stud locations (from a reference point) | | |
+| Stud-to-drywall-face thickness at the opening | not sure how to measure this | |
+| Stud locations (from a reference point) |  | |
 
 ## 6. Track light box — blocks the upper-panel bias decision
 
@@ -66,4 +68,4 @@ product family — flat-pack particleboard can bow.
 
 | Measurement | Actual |
 |---|---|
-| Floor level across the full 105 1/2" run (linoleum)? | |
+| Floor level across the full 105 1/2" run (linoleum)? | floor 104 3/16 this is from inside the trim/baseboard on each wall and floor is pretty level the 4x4 wobbles a tiny bit |

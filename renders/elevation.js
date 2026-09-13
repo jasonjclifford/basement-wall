@@ -28,9 +28,10 @@ function drawElevation(containerId, opts) {
   }
   // Xu: UNMIRRORED screen-x — real-x always increases left-to-right, regardless
   // of `mirror`. Furniture (the desk, the Alex/desktop run) always sits against
-  // the SAME physical wall (SIDE_WALL_X, the divider's right-stile end) and
-  // should always render on the same screen side in both rooms' elevations —
-  // so furniture uses Xu, not the divider-mirroring-aware X.
+  // the SAME physical wall (INTERNAL_WALL_X, the divider's right-stile end —
+  // bedroom's right wall / office's left wall) and should always render on
+  // the same screen side in both rooms' elevations — so furniture uses Xu,
+  // not the divider-mirroring-aware X.
   function Xu(xin) { return (MARGIN + xin) * PXPI; }
   function Y(yin) { return totalH - (yin + 12) * PXPI; }
 
@@ -65,7 +66,9 @@ function drawElevation(containerId, opts) {
     width: Math.abs(openingScreenRightEdge - stepXcoord),
     height: Y(CEIL_LOW) - Y(CEIL_HIGH), fill:"#e8e0d0"
   }));
-  g.appendChild(text((stepXcoord + openingScreenRightEdge)/2, Y(CEIL_LOW)-8, "9\" duct soffit", 11, {fill:"#8a7c5f"}));
+  // Label appended later (after drawUpperPanel) rather than here — the
+  // upper-panel rect spans up to CEIL_LOW too and paints over anything
+  // added before it in the same <g>, in SVG's painter's-model z-order.
 
   // ================= STRUCTURE =================
   rectIn(0, OPEN_W, FLOOR_Y, bottomPlateTop, {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":1});
@@ -134,19 +137,27 @@ function drawElevation(containerId, opts) {
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 (open shelves)", 11));
     g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 backer — board & batten (color TBD)", 11));
   }
-  g.appendChild(text(X(ceilStepAbs/2), Y(carcassTop)+34, mirror? "ledge ~10 3/8\" deep" : "ledge 7 11/16\" deep", 10, {fill:"#6b5d3f"}));
+  g.appendChild(text((stepXcoord + openingScreenRightEdge)/2, Y(CEIL_LOW)-8, "9\" duct soffit", 11, {fill:"#8a7c5f"}));
+  // NOTE: both sides get the same LEDGE_DEPTH — the panel is currently
+  // planned centred in depth (equal ledges). The "~10 3/8\" office / 5\"
+  // bedroom" split in prompt.md is Option 2 of the still-open track-light
+  // decision (an alternate, NOT-yet-adopted biased-panel layout) — this
+  // label should not show that number until biasing is actually decided.
+  g.appendChild(text(X(ceilStepAbs/2), Y(carcassTop)+34, `ledge ${inchLabel(LEDGE_DEPTH)} deep`, 10, {fill:"#6b5d3f"}));
 
   // ================= DIMENSIONS =================
   // Width labels sit in the fixed label strip just above the real ceiling —
-  // not floating above an assumed room height.
-  dim(0, OPEN_W, CEIL_HIGH+2, "105 1/2\" opening (wall to wall)", {offset:6, size:10.5});
-  dim(GAP, GAP+CASE_IN, CEIL_HIGH+2, "104\" inside casing", {offset:22, size:9.5, color:"#a89570"});
+  // not floating above an assumed room height. Labels are computed from the
+  // live constants (inchLabel) rather than hardcoded, so a measurement
+  // update in geometry.js keeps every label in sync automatically.
+  dim(0, OPEN_W, CEIL_HIGH+2, `${inchLabel(OPEN_W)} opening (wall to wall)`, {offset:6, size:10.5});
+  dim(GAP, GAP+CASE_IN, CEIL_HIGH+2, `${inchLabel(CASE_IN)} inside casing`, {offset:22, size:9.5, color:"#a89570"});
   if (!mirror) {
-    dim(xK43_0, xK43_1, FLOOR_Y, "43 7/8\"", {offset:18});
-    dim(xK44_0, xK44_1, FLOOR_Y, "57 7/8\"", {offset:18});
+    dim(xK43_0, xK43_1, FLOOR_Y, inchLabel(K43_W), {offset:18});
+    dim(xK44_0, xK44_1, FLOOR_Y, inchLabel(K44_W), {offset:18});
   } else {
-    dim(xK44_0, xK44_1, FLOOR_Y, "57 7/8\"", {offset:18});
-    dim(xK43_0, xK43_1, FLOOR_Y, "43 7/8\"", {offset:18});
+    dim(xK44_0, xK44_1, FLOOR_Y, inchLabel(K44_W), {offset:18});
+    dim(xK43_0, xK43_1, FLOOR_Y, inchLabel(K43_W), {offset:18});
   }
   dim(xLeftStile0, xLeftStile1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
   dim(xCenter0, xCenter1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
@@ -165,8 +176,9 @@ function drawElevation(containerId, opts) {
 
   // ================= FURNITURE (drawn IN FRONT of the divider — same picture
   // plane, parallel to it, not on a perpendicular wall). Uses Xu (unmirrored)
-  // rather than X, so furniture against the same physical wall (SIDE_WALL_X)
-  // always renders on the same screen side in both rooms' elevations. =================
+  // rather than X, so furniture against the same physical wall
+  // (INTERNAL_WALL_X) always renders on the same screen side in both rooms'
+  // elevations. =================
   const fg = el("g", {id: toggleId});
   g.appendChild(fg);
   const { rect: rectF, line: lineF } = boundDrawers(Xu, Y, fg);
@@ -176,7 +188,7 @@ function drawElevation(containerId, opts) {
   // Passed as ROOM_H for backward compat with bedroom.html/office.html's
   // furniture callbacks, but now holds CEIL_HIGH (the real ceiling) rather
   // than an assumed room height — those callbacks only use it to run the
-  // dashed "side wall" reference line up through the visible wall area,
+  // dashed "internal wall" reference line up through the visible wall area,
   // which should stop at the real ceiling, not an invented one.
   if (drawFurniture) drawFurniture({ X: Xu, Y, rectF, lineF, dimF, textF, ROOM_H: CEIL_HIGH });
 

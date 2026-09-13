@@ -14,18 +14,19 @@
   <a href="plan.html">Plan view</a>
   <a href="section.html" class="current">Upper panel section</a>
   <a href="framing.html">Ladder framing</a>
+  <a href="reference.html">Build reference</a>
 </nav>
 
 <div class="panel">
-<h2>Side-view section — upper panel &amp; cleats (tall side, 22 7/8")</h2>
+<h2 id="section-tall-heading">Side-view section — upper panel &amp; cleats (tall side)</h2>
 <div class="svg-narrow"><div id="section-tall"></div></div>
-<p class="note">Cut vertically through the divider's depth, at the 82"-ceiling (tall) portion of the opening — the left 28 1/2" of the run. Bedroom is to the left, office to the right in this view.</p>
+<p class="note" id="section-tall-note">Cut vertically through the divider's depth, at the tall-ceiling portion of the opening. Bedroom is to the left, office to the right in this view.</p>
 </div>
 
 <div class="panel">
-<h2>Side-view section — upper panel &amp; cleats (low side, 13 7/8")</h2>
+<h2 id="section-low-heading">Side-view section — upper panel &amp; cleats (low side)</h2>
 <div class="svg-narrow"><div id="section-low"></div></div>
-<p class="note">Same cut, at the 73"-ceiling (low, soffit-dropped) portion of the opening — the remaining 77" of the run.</p>
+<p class="note" id="section-low-note">Same cut, at the low (soffit-dropped) portion of the opening.</p>
 </div>
 
 <script src="geometry.js"></script>
@@ -42,8 +43,10 @@ function drawSection(containerId, ceilHeight, label) {
   const panelZoneH = ceilHeight - ledgeTop; // height from the ledge (top plate top) to the ceiling
   // marginR is wider than marginL: the right side carries the OFFICE room label
   // plus the overall-height dimension line and its text label, both of which
-  // need real screen width beyond the divider depth itself.
-  const marginL = 4, marginR = 9.5, marginBottom = 6, marginTop = 10;
+  // need real screen width beyond the divider depth itself. 11 (not 9.5) so
+  // the longer measured-fraction labels (e.g. "22 15/16\"") fit without
+  // clipping at the right edge.
+  const marginL = 4, marginR = 11, marginBottom = 6, marginTop = 10;
   const totalW = (DIVIDER_DEPTH + marginL + marginR) * PXPI;
   const totalH = (panelZoneH + marginTop + marginBottom) * PXPI;
   const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
@@ -92,16 +95,23 @@ function drawSection(containerId, ceilHeight, label) {
   g.appendChild(text(X(panelX0-CLEAT_W-2.6), Y(cleatMid-3), "cleat (x4)", 8, {fill:"#6b5d3f", anchor:"end"}));
 
   // ---- Dimensions ----
-  dim(0, DIVIDER_DEPTH, -topPlateH, "15 7/8\" divider depth", {offset:22, size:9});
-  dim(0, panelX0, panelZoneH+2, "7 11/16\" ledge", {offset:14, size:8.5, color:"#8a7c5f"});
-  dim(panelX1, DIVIDER_DEPTH, panelZoneH+2, "7 11/16\" ledge", {offset:14, size:8.5, color:"#8a7c5f"});
+  dim(0, DIVIDER_DEPTH, -topPlateH, `${inchLabel(DIVIDER_DEPTH)} divider depth`, {offset:22, size:9});
+  dim(0, panelX0, panelZoneH+2, `${inchLabel(LEDGE_DEPTH)} ledge`, {offset:14, size:8.5, color:"#8a7c5f"});
+  dim(panelX1, DIVIDER_DEPTH, panelZoneH+2, `${inchLabel(LEDGE_DEPTH)} ledge`, {offset:14, size:8.5, color:"#8a7c5f"});
   vdim(0, panelZoneH, DIVIDER_DEPTH, label, {offset:44, size:9});
-  vdim(0, CLEAT_H, 0, "1 1/2\"", {offset:6, size:7.5, color:"#8a7c5f"});
+  vdim(0, CLEAT_H, 0, inchLabel(CLEAT_H), {offset:6, size:7.5, color:"#8a7c5f"});
 
   document.getElementById(containerId).appendChild(svg);
 }
-drawSection("section-tall", 82, "22 7/8\" (tall side)");
-drawSection("section-low", 73, "13 7/8\" (low side)");
+drawSection("section-tall", CEIL_HIGH, `${inchLabel(CEIL_HIGH-ledgeTop)} (tall side)`);
+drawSection("section-low", CEIL_LOW, `${inchLabel(CEIL_LOW-ledgeTop)} (low side)`);
+
+// Headings/notes filled in from the live constants rather than hardcoded, so
+// a measurement update in geometry.js keeps this page's text in sync too.
+document.getElementById("section-tall-heading").textContent = `Side-view section — upper panel & cleats (tall side, ${inchLabel(CEIL_HIGH-ledgeTop)})`;
+document.getElementById("section-tall-note").textContent = `Cut vertically through the divider's depth, at the ${inchLabel(CEIL_HIGH)}-ceiling (tall) portion of the opening — the left ${inchLabel(STEP_X)} of the run. Bedroom is to the left, office to the right in this view.`;
+document.getElementById("section-low-heading").textContent = `Side-view section — upper panel & cleats (low side, ${inchLabel(CEIL_LOW-ledgeTop)})`;
+document.getElementById("section-low-note").textContent = `Same cut, at the ${inchLabel(CEIL_LOW)}-ceiling (low, soffit-dropped) portion of the opening — the remaining ${inchLabel(OPEN_W-STEP_X)} of the run.`;
 </script>
 </body>
 </html>

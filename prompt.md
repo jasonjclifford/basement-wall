@@ -29,6 +29,15 @@ All frame members 15 7/8" deep (15 3/8 carcass + 1/4" backer on each face).
   the baseboard — no notching. Above the baseboard that 3/4" gap takes a cleat
   screwed into the studs, which is both the light seal and the lag point for the
   stiles. Below, the baseboard fills it.
+- Wall cleat material: 3/4" plywood, ripped into strips (matches the ladder
+  frame's own material and thickness, uses offcuts, fully hidden in the gap so
+  exposed plywood edges don't matter). 1x4 pine is the documented alternative
+  if ripping plywood isn't worth it.
+- Cleat-to-stile fastening (decided): screwed through the stile face into the
+  cleat, driven from the room side before the backer panel goes on — not
+  through the cleat from inside the 3/4" gap. Simpler to execute; the
+  "non-permanent" requirement is already satisfied by the ceiling cleats and
+  wall lags being reversible, so tool-free stile removal isn't a goal.
 
 ### Layout, from the left wall (bedroom view)
 | 0 – 3/4 | side gap: casing / wall cleat |

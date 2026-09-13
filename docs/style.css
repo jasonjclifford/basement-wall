@@ -22,10 +22,18 @@ svg { display:block; width:100%; height:auto; }
 .toggle-row { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:normal; color:#555; }
 .toggle-row input { cursor:pointer; }
 .note { color:#8a7c5f; font-size:14px; margin:6px 0 0; line-height:1.4; }
-.status ul { margin:6px 0 0; padding-left:20px; }
-.status li { margin:4px 0; }
-.status .open { color:#a15c1f; }
 nav.pages { display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 18px; }
 nav.pages a { font-size:13px; padding:6px 12px; border-radius:5px; background:#fff; border:1px solid #ccc; color:#444; text-decoration:none; }
 nav.pages a.current { background:#5a5245; color:#fff; border-color:#5a5245; }
 nav.pages a:hover { border-color:#8a7a55; }
+.panel ul { margin:6px 0 0; padding-left:20px; font-size:14px; line-height:1.5; }
+.panel li { margin:4px 0; }
+.panel li ul { margin-top:4px; }
+.panel .open { color:#a15c1f; }
+table.cutlist { width:100%; border-collapse:collapse; font-size:13.5px; margin-top:6px; }
+table.cutlist th, table.cutlist td { text-align:left; padding:6px 8px; border-bottom:1px solid #e0dcd2; vertical-align:top; }
+table.cutlist th { color:#6b5d3f; font-weight:600; border-bottom:2px solid #c9bda0; }
+table.cutlist tr:hover td { background:#faf8f3; }
+@media (max-width: 700px) {
+  table.cutlist { display:block; overflow-x:auto; white-space:nowrap; }
+}

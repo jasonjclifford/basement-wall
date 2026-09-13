@@ -7,6 +7,22 @@
 
 const NS = "http://www.w3.org/2000/svg";
 
+// Formats a decimal inch value as a carpenter's fraction label, e.g.
+// inchLabel(57.8125) -> '57 13/16"'. Rounds to the nearest 1/16" (the
+// measurement checklist's own precision) so a derived value like
+// K44_W + STILE doesn't render as an ugly repeating decimal. denom lets a
+// caller ask for coarser rounding (e.g. 8 for 1/8" dimension lines).
+function inchLabel(value, denom) {
+  denom = denom || 16;
+  const whole = Math.floor(value);
+  let num = Math.round((value - whole) * denom);
+  let den = denom;
+  if (num === den) { return `${whole + 1}"`; }
+  if (num === 0) { return `${whole}"`; }
+  while (num % 2 === 0 && den % 2 === 0) { num /= 2; den /= 2; }
+  return `${whole ? whole + " " : ""}${num}/${den}"`;
+}
+
 function el(tag, attrs) {
   const e = document.createElementNS(NS, tag);
   for (const k in attrs) e.setAttribute(k, attrs[k]);
