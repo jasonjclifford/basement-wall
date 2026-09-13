@@ -36,7 +36,7 @@ function drawBedroomFurniture({ X, Y, rectF, lineF, dimF, textF, ROOM_H }) {
   textF(X((bedDeskX0+bedDeskX1)/2), Y(deskH)-8, "Antique wood desk 44\"x23\", against wall (right) and 4x4 backer (behind)", 10.5);
   dimF(bedDeskX0, bedDeskX1, 0, "44\"", {offset:18});
   lineF(bedDeskX1, 0, bedDeskX1, ROOM_H, {stroke:"#999","stroke-width":1,"stroke-dasharray":"5,3"});
-  textF(X(bedDeskX1)-4, Y(ROOM_H*0.7), "side wall →", 8.5, {fill:"#888", anchor:"end"});
+  textF(X(bedDeskX1)-4, Y(ROOM_H*0.92), "side wall →", 8.5, {fill:"#888", anchor:"end"});
 }
 
 drawElevation("bedroom", {mirror:false, drawFurniture: drawBedroomFurniture, toggleId:"furn"});

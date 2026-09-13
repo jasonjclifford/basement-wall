@@ -12,8 +12,15 @@ function drawElevation(containerId, opts) {
 
   const PXPI = 6.2;
   const MARGIN = 26; // headroom so outward dimension labels don't clip
+  // Canvas height is cropped to the real ceiling (CEIL_HIGH) plus a small
+  // fixed label strip — NOT drawn out to an assumed room height. The actual
+  // ceiling height above the opening is an open question (see prompt.md), so
+  // there's nothing real to draw there; inventing wall space up to ROOM_H
+  // just to have somewhere to put dimension labels reads as a real, large
+  // gap above the divider that doesn't exist in the design.
+  const TOP_LABEL_STRIP = 16; // headroom above the real ceiling for the two width-dimension labels only
   const totalW = (OPEN_W + MARGIN*2) * PXPI;
-  const totalH = (ROOM_H + 34) * PXPI;
+  const totalH = (CEIL_HIGH + TOP_LABEL_STRIP + 12) * PXPI;
   const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
 
   function X(xin) {
@@ -33,9 +40,11 @@ function drawElevation(containerId, opts) {
   const vdim = vDimLineFactory(X, Y, g);
   const { rect: rectIn, line: lineIn } = boundDrawers(X, Y, g);
 
-  // ---- Floor / back wall ----
+  // ---- Floor / wall ---- Wall fill stops at the real ceiling (CEIL_HIGH);
+  // above that is just the fixed label strip, left blank (no wall texture) —
+  // there's no known ceiling height to depict up there.
   g.appendChild(el("rect", {x:0, y:Y(0), width: totalW, height: totalH-Y(0), fill:"#ded6c8"}));
-  g.appendChild(el("rect", {x:0, y:0, width: totalW, height: Y(0), fill:"#f4f1ea"}));
+  g.appendChild(el("rect", {x:0, y:Y(CEIL_HIGH), width: totalW, height: Y(0)-Y(CEIL_HIGH), fill:"#f4f1ea"}));
 
   // ---- Opening / casing outline ----
   const openLeftX = X(0), openRightX = X(OPEN_W);
@@ -45,15 +54,16 @@ function drawElevation(containerId, opts) {
     fill:"none", stroke:"#b8ab90", "stroke-width": 6
   }));
 
-  // ---- Ceiling step / soffit ----
+  // ---- Ceiling step / soffit — the shaded band is exactly the real 9" drop
+  // (CEIL_HIGH to CEIL_LOW), not extended above the true ceiling line. ----
   const stepXcoord = X(ceilStepAbs);
   const openingScreenRightEdge = mirror ? X(0) : X(OPEN_W);
   const path = `M ${X(0)} ${Y(CEIL_HIGH)} L ${stepXcoord} ${Y(CEIL_HIGH)} L ${stepXcoord} ${Y(CEIL_LOW)} L ${X(OPEN_W)} ${Y(CEIL_LOW)}`;
   g.appendChild(el("path", {d:path, fill:"none", stroke:"#a8977a", "stroke-width":2, "stroke-dasharray":"4,3"}));
   g.appendChild(el("rect", {
-    x: Math.min(stepXcoord, openingScreenRightEdge), y: 0,
+    x: Math.min(stepXcoord, openingScreenRightEdge), y: Y(CEIL_HIGH),
     width: Math.abs(openingScreenRightEdge - stepXcoord),
-    height: Y(CEIL_LOW), fill:"#e8e0d0"
+    height: Y(CEIL_LOW) - Y(CEIL_HIGH), fill:"#e8e0d0"
   }));
   g.appendChild(text((stepXcoord + openingScreenRightEdge)/2, Y(CEIL_LOW)-8, "9\" duct soffit", 11, {fill:"#8a7c5f"}));
 
@@ -127,8 +137,10 @@ function drawElevation(containerId, opts) {
   g.appendChild(text(X(ceilStepAbs/2), Y(carcassTop)+34, mirror? "ledge ~10 3/8\" deep" : "ledge 7 11/16\" deep", 10, {fill:"#6b5d3f"}));
 
   // ================= DIMENSIONS =================
-  dim(0, OPEN_W, ROOM_H+18, "105 1/2\" opening (wall to wall)", {offset:6, size:10.5});
-  dim(GAP, GAP+CASE_IN, ROOM_H+18, "104\" inside casing", {offset:22, size:9.5, color:"#a89570"});
+  // Width labels sit in the fixed label strip just above the real ceiling —
+  // not floating above an assumed room height.
+  dim(0, OPEN_W, CEIL_HIGH+2, "105 1/2\" opening (wall to wall)", {offset:6, size:10.5});
+  dim(GAP, GAP+CASE_IN, CEIL_HIGH+2, "104\" inside casing", {offset:22, size:9.5, color:"#a89570"});
   if (!mirror) {
     dim(xK43_0, xK43_1, FLOOR_Y, "43 7/8\"", {offset:18});
     dim(xK44_0, xK44_1, FLOOR_Y, "57 7/8\"", {offset:18});
@@ -161,7 +173,12 @@ function drawElevation(containerId, opts) {
   const dimF = dimLineFactory(Xu, Y, fg);
   function textF(x,y,str,size,fopts){ fg.appendChild(text(x,y,str,size,fopts)); }
 
-  if (drawFurniture) drawFurniture({ X: Xu, Y, rectF, lineF, dimF, textF, ROOM_H });
+  // Passed as ROOM_H for backward compat with bedroom.html/office.html's
+  // furniture callbacks, but now holds CEIL_HIGH (the real ceiling) rather
+  // than an assumed room height — those callbacks only use it to run the
+  // dashed "side wall" reference line up through the visible wall area,
+  // which should stop at the real ceiling, not an invented one.
+  if (drawFurniture) drawFurniture({ X: Xu, Y, rectF, lineF, dimF, textF, ROOM_H: CEIL_HIGH });
 
   document.getElementById(containerId).appendChild(svg);
 }

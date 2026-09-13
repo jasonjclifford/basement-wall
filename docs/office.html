@@ -57,7 +57,7 @@ function drawOfficeFurniture({ X, Y, rectF, lineF, dimF, textF, ROOM_H }) {
   dimF(tallX0, tallX1, 0, "14 1/8\"", {offset:18, size:8.5});
   dimF(alex1X0, tallX1, 0, "93 1/8\" total run, against divider + side wall", {offset:52, size:8.5});
   lineF(tallX1, 0, tallX1, ROOM_H, {stroke:"#999","stroke-width":1,"stroke-dasharray":"5,3"});
-  textF(X(tallX1)-4, Y(ROOM_H*0.7), "side wall →", 8.5, {fill:"#888", anchor:"end"});
+  textF(X(tallX1)-4, Y(ROOM_H*0.92), "side wall →", 8.5, {fill:"#888", anchor:"end"});
 }
 
 drawElevation("office", {mirror:true, drawFurniture: drawOfficeFurniture, toggleId:"furn"});
