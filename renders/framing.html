@@ -24,7 +24,10 @@
 
 <div class="panel">
 <h2>Wall support detail — side gap &amp; cleat (either end, both are 3/4")</h2>
-<div class="svg-narrow"><div id="wall-detail"></div></div>
+<div class="wall-detail-row">
+  <div><div id="wall-detail-plan"></div><p class="fig-caption">Looking down (plan) — wall to stile</p></div>
+  <div><div id="wall-detail-elev"></div><p class="fig-caption">Looking at the wall (elevation) — baseboard to ceiling</p></div>
+</div>
 <p class="note">The whole assembly sits 3/4" clear of each side wall so it passes in front of the baseboard without notching. Above the baseboard, that 3/4" gap takes a cleat screwed into the studs — this is both the light seal and the lag point for the stiles. Below the cleat, the baseboard fills the gap.</p>
 </div>
 
@@ -160,54 +163,135 @@ function drawFraming(containerId) {
 drawFraming("framing");
 
 // ============================================================================
-// Wall support detail: side-view section through the 3/4" side gap, showing
-// the cleat / baseboard / stile relationship at either wall end.
+// Wall support detail, redrawn as two small linked views instead of one
+// conflated side-view — the old single drawing put "depth" on its horizontal
+// axis but labeled the 3/4" WIDTH gap on that same axis, so the number this
+// detail exists to show (the 3/4" clearance) never actually appeared as a
+// dimensioned width anywhere. Splitting it in two fixes that:
+//   1. Plan (top-down): wall — 3/4" gap+cleat — stile, along the room's
+//      width axis, with depth (15 7/8") running away from the viewer. This
+//      is where the 3/4" gap is actually dimensioned.
+//   2. Elevation (looking at the wall): baseboard at the floor, cleat filling
+//      the same 3/4" gap above it, running up past the top plate. This is
+//      where the baseboard/cleat height split is dimensioned.
+// Both views share the same wall/gap/cleat/stile color key so they read as
+// one detail split across two angles, not two unrelated drawings.
 // ============================================================================
-function drawWallDetail(containerId) {
-  const PXPI = 16;
-  const gapDepth = DIVIDER_DEPTH; // the cleat and stile both run the full 15 7/8" depth
-  const drawH = 30; // enough height to show baseboard, cleat, and stile base clearly
-  const marginX = 3, marginY = 4;
-  const totalW = (gapDepth + marginX*2 + 6) * PXPI; // +6 for the wall stub drawn alongside
-  const totalH = (drawH + marginY*2) * PXPI;
+const WALL_FILL = "#c9bda0", WALL_STROKE = "#8a7a55";
+const CLEAT_FILL = "#d8cdb2", CLEAT_STROKE = "#6b5d3f";
+const STILE_FILL = "#b8a97e", STILE_STROKE = "#6b5d3f";
+const BASEBOARD_FILL = "#e8dfc8", BASEBOARD_STROKE = "#a8977a";
+
+function drawWallDetailPlan(containerId) {
+  const PXPI = 30;
+  const wallT = 3;               // wall thickness, drawn context-only
+  const gapW = GAP;              // 3/4" — the headline dimension of this whole detail
+  const stileShown = 2;          // how much of the stile to draw, for context
+  // Extra headroom above and below the strips for the "3/4" gap" dimension
+  // and the wall/cleat/stile callouts — the strips themselves are too narrow
+  // (3/4" = 22.5px for the cleat) to hold any label in place.
+  const marginX = 3, marginTop = 8, marginBottom = 7;
+  const totalW = (wallT + gapW + stileShown + marginX*2) * PXPI;
+  const totalH = (DIVIDER_DEPTH + marginTop + marginBottom) * PXPI;
   const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
   const g = el("g", {});
   svg.appendChild(g);
 
-  function X(depth) { return (depth + marginX) * PXPI; } // 0 = room-facing edge of the gap, gapDepth = the far face
-  function Y(h) { return totalH - (h + marginY) * PXPI; }
+  // X = width, 0 at the wall's room-facing face; Y = depth, 0 at the room-
+  // facing edge of the assembly, DIVIDER_DEPTH at the far (back) face.
+  function X(win) { return (marginX + wallT + win) * PXPI; }
+  function Y(din) { return marginTop*PXPI + din * PXPI; }
   const { rect, line } = boundDrawers(X, Y, g);
   const dim = dimLineFactory(X, Y, g);
-  const vdim = vDimLineFactory(X, Y, g);
 
-  const baseboardH = 5/8;
-  const cleatBottomY = baseboardH; // cleat sits above the baseboard
-  const cleatH = 3; // drawn tall enough to read clearly; actual cleat stock is the 3/4" gap width, full height above baseboard
+  // ---- Room-side orientation label (this plan looks down; "up" on the page
+  // is the room-facing front edge, "down" is the far/back face) ----
+  g.appendChild(text(X((gapW+stileShown)/2), Y(-4.5), "↑ room side", 8, {fill:"#999"}));
 
   // ---- Wall (stud wall the cleat screws into) ----
-  rect(gapDepth, gapDepth+2.5, 0, drawH, {fill:"#c9bda0", stroke:"#8a7a55","stroke-width":1});
-  g.appendChild(text(X(gapDepth+1.25), Y(drawH*0.5), "wall / stud", 8, {fill:"#8a7a55", anchor:"middle", attrs:{transform:`rotate(-90 ${X(gapDepth+1.25)} ${Y(drawH*0.5)})`}}));
+  rect(-wallT, 0, 0, DIVIDER_DEPTH, {fill: WALL_FILL, stroke: WALL_STROKE, "stroke-width":1});
 
-  // ---- Baseboard (fills the gap below the cleat) ----
-  rect(0, gapDepth, 0, baseboardH, {fill:"#e8dfc8", stroke:"#a8977a","stroke-width":1});
+  // ---- Cleat fills the full 3/4" gap x full 15 7/8" depth ----
+  rect(0, gapW, 0, DIVIDER_DEPTH, {fill: CLEAT_FILL, stroke: CLEAT_STROKE, "stroke-width":1.5});
 
-  // ---- Cleat (3/4" gap width x full depth, screwed into the studs, sitting
-  // on/above the baseboard — light seal + lag point for the stile) ----
-  rect(0, gapDepth, cleatBottomY, drawH, {fill:"#d8cdb2", stroke:"#6b5d3f","stroke-width":1.5});
-  g.appendChild(text(X(gapDepth*0.5), Y((cleatBottomY+drawH)/2)-2, "cleat", 9, {fill:"#4a3f2c"}));
-  g.appendChild(text(X(gapDepth*0.5), Y((cleatBottomY+drawH)/2)+9, "(screwed to studs)", 7.5, {fill:"#6b5d3f"}));
+  // ---- Stile, shown clipped at stileShown for context ----
+  rect(gapW, gapW+stileShown, 0, DIVIDER_DEPTH, {fill: STILE_FILL, stroke: STILE_STROKE, "stroke-width":1.5});
 
-  // ---- Stile face, shown just clear of the gap on the room side, for context
-  // (the 3/4" plywood ladder frame lags into the cleat here) ----
-  rect(-3, -0.2, 0, drawH, {fill:"#d8cdb2", stroke:"#6b5d3f","stroke-width":1.5});
-  g.appendChild(text(X(-1.5), Y(drawH*0.6), "stile", 8, {fill:"#4a3f2c", anchor:"middle", attrs:{transform:`rotate(-90 ${X(-1.5)} ${Y(drawH*0.6)})`}}));
+  // ---- The headline dimension: the 3/4" gap, spanning wall to stile ----
+  dim(0, gapW, -0.3, "3/4\" gap", {offset:-16, size:9, color:"#4a3f2c"});
 
-  dim(0, gapDepth, drawH, "3/4\" gap = 15 7/8\" deep (light seal + lag point)", {offset:14, size:8});
-  vdim(0, baseboardH, gapDepth+2.5, "5/8\" baseboard", {offset:10, size:7.5, color:"#a8977a"});
+  // ---- Callouts below the strips, each a short leader line straight down
+  // to one label row — plenty of room since labels sit in open margin
+  // instead of inside a 22px-wide strip. All three share one label row so
+  // they read as a single aligned key, not staggered depths. ----
+  function callout(midX, lbl, color) {
+    line(midX, DIVIDER_DEPTH, midX, DIVIDER_DEPTH+3, {stroke:"#8a7a55","stroke-width":0.75});
+    g.appendChild(text(X(midX), Y(DIVIDER_DEPTH+3)+10, lbl, 8.5, {fill: color}));
+  }
+  callout(-wallT/2, "wall", "#6b5d47");
+  callout(gapW/2, "cleat", "#4a3f2c");
+  callout(gapW+stileShown/2, "stile", "#4a3f2c");
+  g.appendChild(text(X(gapW+stileShown+0.4), Y(DIVIDER_DEPTH/2), "15 7/8\" deep", 8, {fill:"#8a7c5f", anchor:"start", attrs:{transform:`rotate(-90 ${X(gapW+stileShown+0.4)} ${Y(DIVIDER_DEPTH/2)})`}}));
 
   document.getElementById(containerId).appendChild(svg);
 }
-drawWallDetail("wall-detail");
+drawWallDetailPlan("wall-detail-plan");
+
+function drawWallDetailElevation(containerId) {
+  const PXPI = 16;
+  const gapW = GAP;               // 3/4" — same gap, now shown face-on
+  const baseboardH = 5/8;
+  const aboveBaseboard = 8;       // how much cleat height to show above the baseboard
+  // Wide margins on both sides so "baseboard" and "cleat" get real leader-line
+  // callouts instead of text squeezed inside a 3/4"-wide strip (16px at this
+  // scale — not enough for even one word).
+  const marginLeft = 24, marginRight = 30, marginTop = 6, marginBottom = 3;
+  const drawH = baseboardH + aboveBaseboard;
+  const totalW = marginLeft*PXPI + gapW*PXPI + marginRight*PXPI;
+  const totalH = (drawH + marginTop + marginBottom) * PXPI;
+  const svg = el("svg", { viewBox: `0 0 ${totalW} ${totalH}`, xmlns: NS });
+  const g = el("g", {});
+  svg.appendChild(g);
+
+  function X(win) { return marginLeft*PXPI + win * PXPI; }
+  function Y(hin) { return totalH - (marginBottom + hin) * PXPI; }
+  const { rect, line } = boundDrawers(X, Y, g);
+
+  // ---- Floor line ----
+  g.appendChild(el("line", {x1:X(-1), y1:Y(0), x2:X(gapW+1), y2:Y(0), stroke:"#8a7a55","stroke-width":1.5}));
+
+  // ---- Baseboard fills the gap at the floor ----
+  rect(0, gapW, 0, baseboardH, {fill: BASEBOARD_FILL, stroke: BASEBOARD_STROKE, "stroke-width":1});
+
+  // ---- Cleat sits directly above the baseboard, filling the same gap,
+  // continuing up past the top of this cropped view (torn edge = "continues
+  // to top plate") ----
+  rect(0, gapW, baseboardH, drawH, {fill: CLEAT_FILL, stroke: CLEAT_STROKE, "stroke-width":1.5});
+  // torn-edge tick marks at the top of the view, signalling "continues up"
+  [0.2, 0.5, 0.8].forEach(f => {
+    g.appendChild(el("line", {x1:X(gapW*f-0.09), y1:Y(drawH), x2:X(gapW*f+0.09), y2:Y(drawH-0.6), stroke:"#6b5d3f","stroke-width":1}));
+  });
+  g.appendChild(text(X(gapW/2), Y(drawH)-8, "continues to", 7.5, {fill:"#8a7c5f", anchor:"middle"}));
+  g.appendChild(text(X(gapW/2), Y(drawH)+1, "top plate", 7.5, {fill:"#8a7c5f", anchor:"middle"}));
+
+  // ---- Leader-line callouts into the side margins (same convention as the
+  // main framing elevation above) — plenty of room since the gap itself is
+  // only 3/4" wide on screen. ----
+  function callout(fromX, fromY, toX, lines, opts) {
+    opts = opts || {};
+    const anchor = opts.anchor || (toX < fromX ? "end" : "start");
+    const lineHeight = 12;
+    line(fromX, fromY, toX, fromY, {stroke:"#8a7a55","stroke-width":0.75});
+    lines.forEach((lbl, i) => {
+      g.appendChild(text(X(toX) + (anchor==="end"?-3:3), Y(fromY) - (lines.length-1-i)*lineHeight + 3, lbl, opts.size||9, {fill: opts.color||"#4a3f2c", anchor}));
+    });
+  }
+  callout(gapW/2, baseboardH/2, gapW+7, ["5/8\" baseboard"], {color: BASEBOARD_STROKE});
+  callout(gapW/2, baseboardH + aboveBaseboard*0.55, -6, ["cleat", "(screwed to studs)"], {color:"#4a3f2c"});
+
+  document.getElementById(containerId).appendChild(svg);
+}
+drawWallDetailElevation("wall-detail-elev");
 </script>
 </body>
 </html>

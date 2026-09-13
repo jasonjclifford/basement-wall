@@ -11,6 +11,14 @@ svg { display:block; width:100%; height:auto; }
 .svg-narrow { display:flex; justify-content:center; }
 .svg-narrow svg { width:auto; max-width:100%; height:420px; }
 @media (max-width: 500px) { .svg-narrow svg { height:320px; } }
+/* Two small side-by-side figures (e.g. a plan slice + an elevation slice of
+   the same detail) — each figure keeps its own natural aspect ratio instead
+   of stretching to fill the row, and wraps to stacked on narrow screens. */
+.wall-detail-row { display:flex; justify-content:center; align-items:flex-end; gap:36px; flex-wrap:wrap; }
+.wall-detail-row svg { width:auto; height:360px; max-width:100%; }
+.wall-detail-row > div { text-align:center; }
+.fig-caption { color:#8a7c5f; font-size:10.5px; margin:4px 0 0; }
+@media (max-width: 500px) { .wall-detail-row svg { height:280px; } }
 .toggle-row { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:normal; color:#555; }
 .toggle-row input { cursor:pointer; }
 .note { color:#8a7c5f; font-size:11.5px; margin:6px 0 0; }
