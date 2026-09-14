@@ -87,6 +87,24 @@ const LEDGE_DEPTH = (DIVIDER_DEPTH - UPPER_PANEL_THICK) / 2; // each side, when 
 const UPPER_PANEL_SEAM_1 = STEP_X;
 const UPPER_PANEL_SEAM_2 = STEP_X + (xRightStile0 - STEP_X) / 2;
 
+// Third vertical blocking run, at the center stile's x-position — NOT a
+// panel seam (the center stile at x≈45.4-46.1" doesn't land at either seam
+// above), added purely to carry tipping-restraint load up to the ceiling.
+// The center stile itself stops at ledgeTop (~59 3/16") like the other two
+// stiles — there is no framing member between the top plate and the ceiling
+// anywhere in this design except the upper panel's own cleats/blocking. A
+// bracket "at the top of the center stile" (an earlier version of this
+// design) would have had nothing to attach to for the last ~14" up to the
+// ceiling; this blocking run IS that missing member. It lands in the
+// CEIL_LOW zone (center stile's x is past STEP_X), so it only needs to run
+// ledgeTop..CEIL_LOW (~14 1/16"), not the full ~23" of the tall zone.
+// Force path: a push on the divider center transfers through the KALLAX
+// carcass (unfastened, so it only transmits contact force) into the top
+// plate (one continuous member across all 3 stiles) into this blocking run
+// into the ceiling bracket into a joist or drywall anchor. See
+// reference.html's "Structural review findings".
+const CENTER_BLOCKING_X = (xCenter0 + xCenter1) / 2;
+
 // ---- The two side walls, named by which one is the foundation wall — not
 // "left"/"right", which flips meaning between rooms and is a standing
 // source of confusion. Standing in either room facing the divider:

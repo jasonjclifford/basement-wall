@@ -150,6 +150,16 @@ function drawElevation(containerId, opts) {
       const blockTop = seamX <= ceilStepAbs ? CEIL_HIGH : CEIL_LOW;
       rectIn(seamX - 0.375, seamX + 0.375, ledgeTop, blockTop, {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":0.5});
     });
+    // Third blocking run, at the center stile's x-position — NOT a panel
+    // seam, added purely so the tipping-restraint ceiling bracket has a
+    // structural member to land on. The center stile stops at ledgeTop like
+    // the other two stiles; without this run there is nothing between the
+    // top plate and the ceiling here. Drawn the same way as the seam
+    // blocking (same fill) but with a small bracket glyph at its top since
+    // this is the one that actually carries the ceiling connection.
+    rectIn(CENTER_BLOCKING_X - 0.375, CENTER_BLOCKING_X + 0.375, ledgeTop, CEIL_LOW,
+      {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":0.5});
+    lineIn(CENTER_BLOCKING_X - 2, CEIL_LOW, CENTER_BLOCKING_X + 2, CEIL_LOW, {stroke:"#8a7a55", "stroke-width":2});
   }
 
   // ---- Assemble by side ----
@@ -184,6 +194,11 @@ function drawElevation(containerId, opts) {
   // the step's dashed line already crowd that spot. Seam 2 is safely inside
   // the flat low-ceiling zone.
   g.appendChild(text(X(UPPER_PANEL_SEAM_2), Y(ledgeTop)+9, "1x2 cap strip + blocking at seam", 8, {fill:"#6b5d3f", anchor:"middle"}));
+  // Center-stile blocking + ceiling bracket label, placed just below the
+  // low-ceiling line (there's clear space between the "9\" duct soffit"
+  // label above and the seam label below) — this is the one blocking run
+  // that isn't at a panel seam, so it needs its own callout.
+  g.appendChild(text(X(CENTER_BLOCKING_X), Y(CEIL_LOW)+12, "blocking + ceiling bracket (over center stile)", 8, {fill:"#6b5d3f", anchor:"middle"}));
 
   // ================= DIMENSIONS =================
   // Width labels sit in the fixed label strip just above the real ceiling —
