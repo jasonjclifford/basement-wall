@@ -5,20 +5,32 @@
 // ============================================================================
 
 // ---- Opening ----
-// CASE_IN is measured directly (floor reading between the baseboards, the
-// most precise reading taken): 104 3/16". OPEN_W (wall-to-wall) is the
-// directly measured 106 1/8" reading, cross-checked by butting both KALLAX
-// units together against one wall and measuring the leftover gap at the
-// other (implied opening: ~106 1/16"-106 1/8", confirming the direct
-// reading). That's ~2" more than CASE_IN + 2x the 3/4" casing-proud
-// assumption (105 11/16") would predict — the casing-proud figure is
-// probably imprecise, or the casing doesn't run perfectly parallel to the
-// wall face. Either way OPEN_W only matters for drawing context (it's never
-// a cut dimension) so the two independently-measured readings win over the
-// derived one. See reference.html's "measurement notes".
-const CASE_IN = 104.1875;    // inside casing, measured (104 3/16")
-const CASING_PROUD = 0.75;   // casing proud of the wall, each side, measured
-const OPEN_W = 106.125;      // wall to wall, measured + cross-checked (106 1/8")
+// THERE IS NO CASING ON THIS OPENING. The side walls are bare drywall
+// corners at standing height; the only trim is the baseboard at the floor
+// (confirmed visually in photos/baseboard.jpg and by the user, Sept 2026).
+// Earlier versions of this file carried a "casing ~3/4" proud each side"
+// assumption inherited from prompt.md, and treated the floor-level
+// baseboard-to-baseboard reading as an "inside casing" constraint on the
+// frame width. Both were wrong, and together they manufactured a phantom
+// 1/8"-of-slack crisis. The two field readings are in fact consistent:
+//
+//   wall to wall (bare drywall, at KALLAX top)   106 1/8"
+//   baseboard face to baseboard face (at floor)  104 3/16"
+//   difference / 2                             =    15/16"  <- the baseboard
+//
+// So the frame's real constraint is OPEN_W (bare wall to bare wall), not the
+// floor reading. BASE_FACE_IN is retained only to size the side gap, since
+// the frame must pass in front of the baseboard without notching.
+const OPEN_W = 105.25;       // wall to wall, bare drywall, at KALLAX height, measured (105 1/4")
+const BASE_FACE_IN = 104.1875; // baseboard face to baseboard face at the floor, measured (104 3/16")
+
+// Baseboard projection, DERIVED by subtracting the two readings above. This is
+// a placeholder and is flagged OPEN in reference.html: it compounds the error
+// of two measurements taken at different heights into the one number the side
+// gap depends on. ~17/32" is plausible (close to the 5/8" originally assumed),
+// but MEASURE THE BASEBOARD DIRECTLY before cutting the wall cleats — hook a
+// tape on the baseboard face and measure back to the wall above it.
+const BASEBOARD_PROUD = (OPEN_W - BASE_FACE_IN) / 2; // ~17/32"
 const FLOOR_Y = 0;
 const CEIL_LOW = 73.25;      // right ~77 1/4" of opening, measured (73 1/4"-73 1/2" across a few points; using the low end as worst case)
 const CEIL_HIGH = 82.125;    // left ~28 3/4" of opening, measured
@@ -31,7 +43,24 @@ const ceilStepAbs = STEP_X;
 // KALLAX dimensions below are measured actuals (see measurements-checklist.md),
 // not the nominal spec sheet — the assembled units run slightly larger than
 // spec, and the drawings/cut list should reflect what's actually in the room.
-const GAP = 0.75;
+// Side gap (wall face to stile face), each side — the space the frame needs to
+// pass in front of the baseboard without notching, later filled by the wall
+// cleat. Sized as the baseboard's projection plus a little clearance.
+//
+// The opening is 105 1/4" wall to wall and the frame is 104 1/16", so there is
+// 1 3/16" of total slack = 19/32" per side. The gap therefore CANNOT exceed
+// 19/32" without the frame failing to fit, and the baseboard derives to about
+// that same 17/32" — i.e. the gap is pinned almost exactly by the geometry,
+// with very little room to choose.
+//
+// That tightness is why BASEBOARD_PROUD must be measured directly rather than
+// derived: if the real baseboard is thicker than ~19/32", the frame as drawn
+// does not fit in front of it and something has to give (see reference.html's
+// "Frame-to-opening fit" for the three options). Kept at the derived value for
+// now so every drawing stays self-consistent.
+const GAP_CLEARANCE = 0.0625; // 1/16" so the frame isn't a friction fit on the trim
+const GAP = BASEBOARD_PROUD + GAP_CLEARANCE; // ~19/32" each side
+const CLEAT_THICK = GAP;     // wall cleat fills the gap; rip to the measured thickness
 const STILE = 0.75;
 const K43_W = 44;            // measured (spec: 43 7/8")
 const CENTER_STILE = 0.75;

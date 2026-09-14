@@ -119,8 +119,11 @@ function drawFraming(containerId) {
   // reference.html's "Structural review findings" for the force path.
   rect(CENTER_BLOCKING_X-0.375, CENTER_BLOCKING_X+0.375, ledgeTop, CEIL_LOW, frameColor);
   line(CENTER_BLOCKING_X-2, CEIL_LOW, CENTER_BLOCKING_X+2, CEIL_LOW, {stroke:"#4a3f2c","stroke-width":2});
-  g.appendChild(text(X(CENTER_BLOCKING_X)+8, Y(ledgeTop)-10, "blocking + ceiling", 8, {fill:"#6b5d3f", anchor:"start"}));
-  g.appendChild(text(X(CENTER_BLOCKING_X)+8, Y(ledgeTop)-1, "bracket (not the stile)", 8, {fill:"#6b5d3f", anchor:"start"}));
+  // Two-line caption: 11px leading at 8px font, so the two lines' bounding
+  // boxes clear each other (9px leading made them overlap by a hair and trip
+  // the collision check).
+  g.appendChild(text(X(CENTER_BLOCKING_X)+8, Y(ledgeTop)-13, "blocking + ceiling", 8, {fill:"#6b5d3f", anchor:"start"}));
+  g.appendChild(text(X(CENTER_BLOCKING_X)+8, Y(ledgeTop)-2, "bracket (not the stile)", 8, {fill:"#6b5d3f", anchor:"start"}));
 
   // ---- KALLAX infill outlines (context only — not structural, drawn faint) ----
   [[xK43_0,xK43_1], [xK44_0,xK44_1]].forEach(([x0,x1]) => {
@@ -237,14 +240,16 @@ function drawWallDetailPlan(containerId) {
   // ---- Wall (stud wall the cleat screws into) ----
   rect(-wallT, 0, 0, DIVIDER_DEPTH, {fill: WALL_FILL, stroke: WALL_STROKE, "stroke-width":1});
 
-  // ---- Cleat fills the full 3/4" gap x full 15 7/8" depth ----
+  // ---- Cleat fills the full side gap x full divider depth ----
   rect(0, gapW, 0, DIVIDER_DEPTH, {fill: CLEAT_FILL, stroke: CLEAT_STROKE, "stroke-width":1.5});
 
   // ---- Stile, shown clipped at stileShown for context ----
   rect(gapW, gapW+stileShown, 0, DIVIDER_DEPTH, {fill: STILE_FILL, stroke: STILE_STROKE, "stroke-width":1.5});
 
-  // ---- The headline dimension: the 3/4" gap, spanning wall to stile ----
-  dim(0, gapW, -0.3, "3/4\" gap", {offset:-16, size:9, color:"#4a3f2c"});
+  // ---- The headline dimension: the side gap, spanning wall to stile.
+  // Sized from the measured baseboard projection, not a nominal 3/4" — see
+  // geometry.js's GAP. ----
+  dim(0, gapW, -0.3, `${inchLabel(gapW)} gap`, {offset:-16, size:9, color:"#4a3f2c"});
 
   // ---- Callouts below the strips, each a short leader line straight down
   // to one label row — plenty of room since labels sit in open margin
@@ -265,9 +270,13 @@ drawWallDetailPlan("wall-detail-plan");
 
 function drawWallDetailElevation(containerId) {
   const PXPI = 16;
-  const gapW = GAP;               // 3/4" — same gap, now shown face-on
+  const gapW = GAP;               // same gap as the plan detail, now shown face-on
   const stileShown = 0.5;         // sliver of the stile shown at the room-facing edge, for the screw-into-cleat detail
-  const baseboardH = 5/8;
+  // This is the baseboard's HEIGHT in this face-on view (how far up the wall
+  // it runs), not its projection — it is the drawing's vertical crop, not a
+  // constraint. The baseboard's projection (BASEBOARD_PROUD) is what sizes
+  // GAP, and it is the dimension called out in the plan detail above.
+  const baseboardH = 4;
   const aboveBaseboard = 8;       // how much cleat height to show above the baseboard
   // Wide margins on both sides so "baseboard" and "cleat" get real leader-line
   // callouts instead of text squeezed inside a 3/4"-wide strip (16px at this

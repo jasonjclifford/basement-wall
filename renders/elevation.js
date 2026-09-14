@@ -206,7 +206,11 @@ function drawElevation(containerId, opts) {
   // live constants (inchLabel) rather than hardcoded, so a measurement
   // update in geometry.js keeps every label in sync automatically.
   dim(0, OPEN_W, CEIL_HIGH+2, `${inchLabel(OPEN_W)} opening (wall to wall)`, {offset:6, size:10.5});
-  dim(GAP, GAP+CASE_IN, CEIL_HIGH+2, `${inchLabel(CASE_IN)} inside casing`, {offset:22, size:9.5, color:"#a89570"});
+  // Frame overall width (stile face to stile face) — the number that actually
+  // gets cut to. Replaces a former "inside casing" callout: this opening has
+  // no casing, and the old floor-level baseboard-to-baseboard reading it drew
+  // was never a constraint on the frame. See geometry.js's opening notes.
+  dim(xLeftStile0, xRightStile1, CEIL_HIGH+2, `${inchLabel(xRightStile1-xLeftStile0)} frame overall`, {offset:22, size:9.5, color:"#a89570"});
   if (!mirror) {
     dim(xK43_0, xK43_1, FLOOR_Y, inchLabel(K43_W), {offset:18});
     dim(xK44_0, xK44_1, FLOOR_Y, inchLabel(K44_W), {offset:18});
