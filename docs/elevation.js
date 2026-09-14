@@ -51,7 +51,12 @@ function drawElevation(containerId, opts) {
   // ---- Ceiling step / soffit — the shaded band is exactly the real 9" drop
   // (CEIL_HIGH to CEIL_LOW), not extended above the true ceiling line. ----
   const stepXcoord = X(ceilStepAbs);
-  const openingScreenRightEdge = mirror ? X(0) : X(OPEN_W);
+  // The low (soffit) zone is always real-x ceilStepAbs..OPEN_W — X() already
+  // accounts for mirroring, so this needs no mirror-conditional of its own.
+  // (A previous version picked X(0) when mirrored, which is the TALL zone's
+  // other edge — that put the shaded soffit rect and its label over the tall
+  // side instead of the low side in the office view.)
+  const openingScreenRightEdge = X(OPEN_W);
   const path = `M ${X(0)} ${Y(CEIL_HIGH)} L ${stepXcoord} ${Y(CEIL_HIGH)} L ${stepXcoord} ${Y(CEIL_LOW)} L ${X(OPEN_W)} ${Y(CEIL_LOW)}`;
   g.appendChild(el("path", {d:path, fill:"none", stroke:"#a8977a", "stroke-width":2, "stroke-dasharray":"4,3"}));
   g.appendChild(el("rect", {
