@@ -60,21 +60,32 @@ const xRightStile1 = xRightStile0 + STILE;              // 104.75
 // it, unlike the fully-supported backers), stepped profile, centred in the
 // divider's depth -> equal ledge open to each room. Held by 3/4" x 1 1/2"
 // cleats on both faces, at the top plate AND again at the ceiling (four
-// cleat runs total).
+// cleat runs total) PLUS intermediate vertical blocking at each seam (see
+// UPPER_PANEL_SEAM_1/2 below) — a 102 1/2"-wide sheet held only top and
+// bottom bows visibly over that span with nothing between; three ~26-38"
+// bays instead of one ~102" bay keeps it flat. Cheap and hidden, since the
+// seam cap strips already mark those locations on the room-facing side.
 const UPPER_PANEL_THICK = 0.5;
 const CLEAT_W = 0.75, CLEAT_H = 1.5;
 const LEDGE_DEPTH = (DIVIDER_DEPTH - UPPER_PANEL_THICK) / 2; // each side, when the panel is centred in depth — derived from DIVIDER_DEPTH so it stays correct if that's re-measured
 
-// Upper panel seams: 3 pieces (48" + 48" + 6 1/2" = 102 1/2" real panel width,
-// "between the upper jambs" per prompt.md) — placed here at 48" and 96" from
-// the opening's real-x 0, schematically flush to the opening the same way
-// drawUpperPanel() already draws the panel across the full 0..OPEN_W rather
-// than the narrower jamb-to-jamb 102 1/2"; the ~2" discrepancy vs. the
-// panel's true left edge isn't modeled, matching the drawing's existing
-// precision at this scale. Each seam is backed internally by a cleat and
-// covered on the room-facing side by a 1x2 pine cap strip (see elevation.js).
-const UPPER_PANEL_SEAM_1 = 48;
-const UPPER_PANEL_SEAM_2 = 96;
+// Upper panel seams: placed at the jamb-to-jamb panel's real left edge
+// (xLeftStile1) and at the ceiling step (STEP_X), not at arbitrary round
+// numbers — putting a seam AT the step means every piece is a plain
+// rectangle. A seam at 48"/96" from real-x 0 (an earlier version of this
+// file) crosses the step at STEP_X=28.75", making the first piece an
+// L-shaped cutout with an unspecified sheet layout — see the design review
+// this replaced. Three pieces result:
+//   1. xLeftStile1 .. STEP_X   (full CEIL_HIGH height, the tall zone)
+//   2. STEP_X .. UPPER_PANEL_SEAM_2  (full CEIL_LOW height, low zone left half)
+//   3. UPPER_PANEL_SEAM_2 .. xRightStile0  (full CEIL_LOW height, low zone right half)
+// The low zone (STEP_X..xRightStile0, ~75 5/16" real span) is split roughly
+// in half rather than at a round number so both low-zone pieces land well
+// under a 48"-wide sheet with margin, and so the second seam sits mid-span
+// in the low zone for the vertical blocking to actually help (a seam near
+// either end would leave one bay nearly as wide as the whole zone).
+const UPPER_PANEL_SEAM_1 = STEP_X;
+const UPPER_PANEL_SEAM_2 = STEP_X + (xRightStile0 - STEP_X) / 2;
 
 // ---- The two side walls, named by which one is the foundation wall — not
 // "left"/"right", which flips meaning between rooms and is a standing

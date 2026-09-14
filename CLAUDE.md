@@ -1,10 +1,13 @@
 # basement-wall — working notes for Claude Code
 
-Room-divider build project. `prompt.md` is the source of truth for every
-measurement — read it before trusting any number that isn't in `renders/geometry.js`.
-The renders are a communication tool for the user and their handyman, not a CAD
-tool; they're schematic SVG, not to be used for cutting without checking against
-`prompt.md`'s cut list.
+Room-divider build project. `prompt.md` was the initial handoff from an earlier
+session, written before field measurements were taken — it is now stale and
+**not** to be trusted for any number; keep it only for original intent and
+design rationale. **`renders/geometry.js` is the source of truth for every
+measurement**, and `renders/reference.html` is the authoritative cut list,
+fastening schedule, and open-issues tracker. The renders are a communication
+tool for the user and their handyman, not a CAD tool; they're schematic SVG,
+not to be used for cutting without checking against `reference.html`'s cut list.
 
 ## Site structure (`renders/`)
 

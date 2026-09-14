@@ -132,13 +132,23 @@ function drawElevation(containerId, opts) {
     rectIn(0, ceilStepAbs, ledgeTop, CEIL_HIGH, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
     rectIn(ceilStepAbs, OPEN_W, ledgeTop, CEIL_LOW, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
     lineIn(0, ledgeTop, OPEN_W, ledgeTop, {stroke:"#6b5d3f","stroke-width":1.5});
-    // Seams between the panel's 3 pieces (48" + 48" + 6 1/2"), each backed by
-    // an internal cleat and covered on the room-facing side by a 1x2 pine cap
-    // strip — drawn as a slightly wider highlighted strip so it reads as
-    // "trim applied over the seam" rather than a bare structural joint line.
+    // Seam between panel pieces 1 (tall zone) and 2 (low zone) falls AT the
+    // ceiling step (UPPER_PANEL_SEAM_1 === ceilStepAbs, by design — see
+    // geometry.js) so every piece is a plain rectangle, not an L-shape. The
+    // step's own boundary line (the path drawn above, before this function
+    // runs) already marks that seam; a separate highlight there would just
+    // double up on it. Only seam 2 (mid-span in the low zone) needs its own
+    // highlighted cap-strip rect, since it falls inside a flat ceiling zone
+    // with no other line marking it.
+    rectIn(UPPER_PANEL_SEAM_2 - 0.75, UPPER_PANEL_SEAM_2 + 0.75, ledgeTop, CEIL_LOW,
+      {fill:"#e9e3d3", stroke:"#9c8f6f", "stroke-width":0.75});
+    // Vertical blocking behind each seam (top plate to ceiling cleat) keeps
+    // the ~102"-wide panel from bowing between only top/bottom cleats — see
+    // geometry.js's UPPER_PANEL_SEAM_1/2 comment. Drawn as a thin stile-color
+    // strip just inside the panel line so it reads as structure, not trim.
     [UPPER_PANEL_SEAM_1, UPPER_PANEL_SEAM_2].forEach(seamX => {
-      const seamTop = seamX < ceilStepAbs ? CEIL_HIGH : CEIL_LOW;
-      rectIn(seamX-0.75, seamX+0.75, ledgeTop, seamTop, {fill:"#e9e3d3", stroke:"#9c8f6f", "stroke-width":0.75});
+      const blockTop = seamX <= ceilStepAbs ? CEIL_HIGH : CEIL_LOW;
+      rectIn(seamX - 0.375, seamX + 0.375, ledgeTop, blockTop, {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":0.5});
     });
   }
 
@@ -168,10 +178,12 @@ function drawElevation(containerId, opts) {
   // Stile trim label, low on the center stile where there's clear floor-level
   // space in both rooms' layouts (furniture and other labels sit higher up).
   g.appendChild(text(X((xCenter0+xCenter1)/2), Y(bottomPlateTop)+22, "1x3 batten over stile", 8, {fill:"#6b5d3f", anchor:"middle"}));
-  // One label for both seams (they're identical in treatment) — placed at the
-  // first seam, small enough to sit inside the low-ceiling zone without
-  // crowding the "9\" duct soffit" label above it.
-  g.appendChild(text(X(UPPER_PANEL_SEAM_1), Y(ledgeTop)+9, "1x2 cap strip at seam", 8, {fill:"#6b5d3f", anchor:"middle"}));
+  // One label for both seams (identical in treatment: 1x2 cap strip + hidden
+  // vertical blocking behind it) — placed at seam 2, not seam 1, since seam 1
+  // sits exactly at the ceiling step where the "9\" duct soffit" label and
+  // the step's dashed line already crowd that spot. Seam 2 is safely inside
+  // the flat low-ceiling zone.
+  g.appendChild(text(X(UPPER_PANEL_SEAM_2), Y(ledgeTop)+9, "1x2 cap strip + blocking at seam", 8, {fill:"#6b5d3f", anchor:"middle"}));
 
   // ================= DIMENSIONS =================
   // Width labels sit in the fixed label strip just above the real ceiling —
@@ -197,11 +209,16 @@ function drawElevation(containerId, opts) {
   // side is real-x=0); office's run is at low real-x (clear side is
   // real-x=OPEN_W).
   const heightBaselineX = mirror ? OPEN_W : 0;
-  vdim(FLOOR_Y, bottomPlateTop, heightBaselineX, "3/4\" base", {offset:-14, size:8.5});
-  vdim(bottomPlateTop, carcassTop, heightBaselineX, "57 5/8\" carcass", {offset:-14});
-  vdim(carcassTop, ledgeTop, heightBaselineX, "3/4\" ledge", {offset:-14, size:8.5});
-  vdim(ledgeTop, CEIL_HIGH, heightBaselineX, "22 7/8\" upper (tall side)", {offset:-14, size:9});
-  vdim(ledgeTop, CEIL_LOW, ceilStepAbs, "13 7/8\" upper (low side)", {offset:14, size:9, color:"#8a7c5f"});
+  // These four labels are computed from the live constants (inchLabel), like
+  // every other dimension on this page — a previous version hardcoded the
+  // pre-measurement prompt.md numbers here (3/4"/57 5/8"/22 7/8"/13 7/8"),
+  // which drifted out of sync with geometry.js's actual measured values and
+  // would have shown a handyman numbers that contradict the cut list.
+  vdim(FLOOR_Y, bottomPlateTop, heightBaselineX, `${inchLabel(bottomPlateTop)} base`, {offset:-14, size:8.5});
+  vdim(bottomPlateTop, carcassTop, heightBaselineX, `${inchLabel(carcassTop-bottomPlateTop)} carcass`, {offset:-14});
+  vdim(carcassTop, ledgeTop, heightBaselineX, `${inchLabel(ledgeTop-carcassTop)} ledge`, {offset:-14, size:8.5});
+  vdim(ledgeTop, CEIL_HIGH, heightBaselineX, `${inchLabel(CEIL_HIGH-ledgeTop)} upper (tall side)`, {offset:-14, size:9});
+  vdim(ledgeTop, CEIL_LOW, ceilStepAbs, `${inchLabel(CEIL_LOW-ledgeTop)} upper (low side)`, {offset:14, size:9, color:"#8a7c5f"});
 
   // ================= FURNITURE (drawn IN FRONT of the divider — same picture
   // plane, parallel to it, not on a perpendicular wall). Uses the same

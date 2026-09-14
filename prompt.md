@@ -1,5 +1,16 @@
 # Project: non-permanent double-sided room divider (IKEA KALLAX + built plywood frame)
 
+> **⚠️ Historical handoff document — numbers here are stale, do not cut from this file.**
+> This was the initial brief from an earlier session, before field measurements were
+> taken. Every dimension below reflects pre-measurement estimates and has since
+> drifted from reality (opening width, KALLAX sizes, stile length, upper panel
+> material, etc.) — a design review confirmed the two sources now disagree on
+> nearly every number. **`renders/geometry.js` is the single source of truth for
+> every measurement**; `renders/reference.html` is the authoritative cut list,
+> fastening schedule, and open-issues tracker. Keep this file for the original
+> intent, decisions, and rationale narrative (why plywood over MDF, the track-light
+> reasoning, etc.) — not for any number you'd actually cut to.
+
 I'm building a non-permanent divider in the opening between my bedroom (Room A)
 and home office (Room B). Both KALLAX units are already assembled. Help me refine
 the design, assembly sequence, cut lists, and light-proofing. Diagrams welcome.

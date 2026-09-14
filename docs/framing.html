@@ -15,14 +15,12 @@
   <a href="section.html">Upper panel section</a>
   <a href="framing.html" class="current">Ladder framing</a>
   <a href="reference.html">Build reference</a>
-  <a href="bedroom-3d.html">Bedroom 3D</a>
-  <a href="office-3d.html">Office 3D</a>
 </nav>
 
 <div class="panel">
 <h2>Ladder frame — structure only (no KALLAX facing, no board &amp; batten)</h2>
 <div id="framing"></div>
-<p class="note">The 3/4" plywood ladder frame that carries everything; KALLAX units are infill between the stiles, not structural. All frame members are 15 7/8" deep (15 3/8" carcass depth + 1/4" backer on each face) — this view is a straight-on elevation of the frame, same orientation as the bedroom view (left wall on screen-left).</p>
+<p class="note" id="framing-depth-note"></p>
 </div>
 
 <div class="panel">
@@ -37,6 +35,8 @@
 <script src="geometry.js"></script>
 <script src="svg-helpers.js"></script>
 <script>
+document.getElementById("framing-depth-note").textContent =
+  `The 3/4" plywood ladder frame that carries everything; KALLAX units are infill between the stiles, not structural. All frame members are ${inchLabel(DIVIDER_DEPTH)} deep — this view is a straight-on elevation of the frame, same orientation as the bedroom view (left wall on screen-left).`;
 // ============================================================================
 // Framing elevation: same left-wall-referenced orientation as bedroom.html
 // (unmirrored) — the frame is identical from either room, so there's no
