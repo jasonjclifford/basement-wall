@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bedroom 3D View</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Basement Wall Divider — Room Elevations &amp; Plan</h1>
+<nav class="pages">
+  <a href="index.html">Overview</a>
+  <a href="bedroom.html">Bedroom elevation</a>
+  <a href="office.html">Office elevation</a>
+  <a href="plan.html">Plan view</a>
+  <a href="section.html">Upper panel section</a>
+  <a href="framing.html">Ladder framing</a>
+  <a href="reference.html">Build reference</a>
+  <a href="bedroom-3d.html" class="current">Bedroom 3D</a>
+  <a href="office-3d.html">Office 3D</a>
+</nav>
+
+<div class="panel">
+<h2>Bedroom (Room A) — 3D view</h2>
+<div id="bedroom3d" style="width:100%;"></div>
+<p class="note">Drag to orbit, scroll to zoom. Schematic, not to render-quality —
+KALLAX cubbies, desk, and bookcase are simplified boxes built from the same
+measurements as the other drawings (<code>geometry.js</code>). The room shell
+beyond the opening (side walls, back wall, floor) is invented for context, not
+measured — only the divider assembly and the furniture footprints against it
+are real dimensions.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="geometry.js"></script>
+<script src="scene3d.js"></script>
+<script>
+initScene3D("bedroom3d", {
+  mirror: false,
+  furniture: "bedroom",
+  cameraStart: { x: 76, y: 50, z: -95 }
+});
+</script>
+</body>
+</html>
