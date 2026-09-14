@@ -89,43 +89,66 @@ function drawElevation(containerId, opts) {
     }
   }
 
+  const BATTEN_W = 2.5; // 1x3 stock, actual width
+  const battenStyle = {fill:"#faf7ef", stroke:"#9c8f6f", "stroke-width":0.75};
+  function drawBatten(cx, top) {
+    rectIn(cx-BATTEN_W/2, cx+BATTEN_W/2, bottomPlateTop, top, battenStyle);
+    lineIn(cx-BATTEN_W/2, bottomPlateTop, cx-BATTEN_W/2, top, {stroke:"#c9bc9a","stroke-width":0.5});
+    lineIn(cx+BATTEN_W/2, bottomPlateTop, cx+BATTEN_W/2, top, {stroke:"#c9bc9a","stroke-width":0.5});
+  }
+
+  // Every backer's outer edges land exactly at a stile (left/center/right —
+  // see geometry.js's Layout table), so a separate "outer edge" batten on
+  // each backer would just sit next to bare stile face rather than covering
+  // it. Instead each stile gets ONE shared 1x3 batten centered on it (drawn
+  // once in drawStileTrim, not per-backer) — the backer's own middle batten
+  // is the only one left: seam-covering on the 4x4 (2 boards), purely
+  // decorative on the 4x3 (1 board, no seam — kept anyway so both backer
+  // faces read as a consistent 3-bay board-and-batten look).
   function drawBoardBatten(x0,x1, boardColor, nBoards) {
     const top = carcassTop;
     if (nBoards === 1) {
       rectIn(x0,x1,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1.5});
+      drawBatten((x0+x1)/2, top); // decorative — no seam to cover
     } else {
       const mid = (x0+x1)/2;
       rectIn(x0,mid,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1});
       rectIn(mid,x1,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1});
+      drawBatten((x0+x1)/2, top); // covers the seam between the two boards
     }
-    const battenW = 2.5;
-    const battenStyle = {fill:"#faf7ef", stroke:"#9c8f6f", "stroke-width":0.75};
-    function batten(cx) {
-      rectIn(cx-battenW/2, cx+battenW/2, bottomPlateTop, top, battenStyle);
-      lineIn(cx-battenW/2, bottomPlateTop, cx-battenW/2, top, {stroke:"#c9bc9a","stroke-width":0.5});
-      lineIn(cx+battenW/2, bottomPlateTop, cx+battenW/2, top, {stroke:"#c9bc9a","stroke-width":0.5});
-    }
-    batten(x0 + battenW/2);
-    batten(x1 - battenW/2);
-    batten((x0+x1)/2);
+  }
+
+  function drawStileTrim() {
+    const top = carcassTop;
+    [xLeftStile0, xCenter0, xRightStile0].forEach(s0 => drawBatten((s0 + (s0+STILE))/2, top));
   }
 
   function drawUpperPanel() {
     rectIn(0, ceilStepAbs, ledgeTop, CEIL_HIGH, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
     rectIn(ceilStepAbs, OPEN_W, ledgeTop, CEIL_LOW, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
     lineIn(0, ledgeTop, OPEN_W, ledgeTop, {stroke:"#6b5d3f","stroke-width":1.5});
+    // Seams between the panel's 3 pieces (48" + 48" + 6 1/2"), each backed by
+    // an internal cleat and covered on the room-facing side by a 1x2 pine cap
+    // strip — drawn as a slightly wider highlighted strip so it reads as
+    // "trim applied over the seam" rather than a bare structural joint line.
+    [UPPER_PANEL_SEAM_1, UPPER_PANEL_SEAM_2].forEach(seamX => {
+      const seamTop = seamX < ceilStepAbs ? CEIL_HIGH : CEIL_LOW;
+      rectIn(seamX-0.75, seamX+0.75, ledgeTop, seamTop, {fill:"#e9e3d3", stroke:"#9c8f6f", "stroke-width":0.75});
+    });
   }
 
   // ---- Assemble by side ----
   if (!mirror) {
     drawKallax(xK43_0, xK43_1, true, "#fff");
     drawBoardBatten(xK44_0, xK44_1, "#f6d7dd", 2);
+    drawStileTrim();
     drawUpperPanel();
     g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 (open shelves)", 11));
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 backer — pink board & batten", 11));
   } else {
     drawKallax(xK44_0, xK44_1, true, "#fff");
     drawBoardBatten(xK43_0, xK43_1, "#e9e3d3", 1);
+    drawStileTrim();
     drawUpperPanel();
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 (open shelves)", 11));
     g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 backer — board & batten (color TBD)", 11));
@@ -137,6 +160,13 @@ function drawElevation(containerId, opts) {
   // decision (an alternate, NOT-yet-adopted biased-panel layout) — this
   // label should not show that number until biasing is actually decided.
   g.appendChild(text(X(ceilStepAbs/2), Y(carcassTop)+34, `ledge ${inchLabel(LEDGE_DEPTH)} deep`, 10, {fill:"#6b5d3f"}));
+  // Stile trim label, low on the center stile where there's clear floor-level
+  // space in both rooms' layouts (furniture and other labels sit higher up).
+  g.appendChild(text(X((xCenter0+xCenter1)/2), Y(bottomPlateTop)+22, "1x3 batten over stile", 8, {fill:"#6b5d3f", anchor:"middle"}));
+  // One label for both seams (they're identical in treatment) — placed at the
+  // first seam, small enough to sit inside the low-ceiling zone without
+  // crowding the "9\" duct soffit" label above it.
+  g.appendChild(text(X(UPPER_PANEL_SEAM_1), Y(ledgeTop)+9, "1x2 cap strip at seam", 8, {fill:"#6b5d3f", anchor:"middle"}));
 
   // ================= DIMENSIONS =================
   // Width labels sit in the fixed label strip just above the real ceiling —

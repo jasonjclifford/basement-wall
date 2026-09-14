@@ -71,7 +71,7 @@ function drawSection(containerId, ceilHeight, label) {
   rect(-2, DIVIDER_DEPTH+2, panelZoneH, panelZoneH+2, {fill:"#e4ddce", stroke:"#a8977a","stroke-width":1});
   g.appendChild(text(X(DIVIDER_DEPTH/2), Y(panelZoneH+1)+3, "ceiling", 8.5, {fill:"#8a7c5f"}));
 
-  // ---- Upper panel: 1/2" MDF, centred in depth -> 7 11/16" ledge each side.
+  // ---- Upper panel: 1/2" plywood, centred in depth -> 7 11/16" ledge each side.
   // Labeled with a leader line to a callout above, rather than text INSIDE the
   // panel — the panel is only 1/2" wide on screen at this scale, far too
   // narrow to hold a legible in-place label. ----
@@ -79,7 +79,7 @@ function drawSection(containerId, ceilHeight, label) {
   rect(panelX0, panelX1, 0, panelZoneH, {fill:"#efe9dc", stroke:"#6b5d3f","stroke-width":1.5});
   const panelMidX = (panelX0+panelX1)/2, panelMidY = panelZoneH*0.62;
   line(panelMidX, panelMidY, panelMidX-3.4, panelMidY+2.5, {stroke:"#6b5d3f","stroke-width":0.75});
-  g.appendChild(text(X(panelMidX-3.6), Y(panelMidY+2.5), "1/2\" MDF panel", 8, {fill:"#6b5d3f", anchor:"end"}));
+  g.appendChild(text(X(panelMidX-3.6), Y(panelMidY+2.5), "1/2\" plywood panel", 8, {fill:"#6b5d3f", anchor:"end"}));
 
   // ---- Cleats: 3/4" x 1 1/2", one per face at the top plate, one per face at
   // the ceiling — four runs total. Also called out with leader lines instead

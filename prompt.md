@@ -77,6 +77,7 @@ faces at the top plate and again at the ceiling — four runs of 102 1/2".
 - Bedroom-facing surfaces painted very light pink; white KALLAX
 - Office side colour undecided
 - Baseboard to match each room's existing profile, run across the bottom plate edge
+  — a simple flat/rounded-top profile, no ogee/colonial detail (see photos/baseboard.jpg)
 - Nothing gets mounted to the backers — posters taped only
 
 ## Materials estimate (please check)
@@ -88,21 +89,43 @@ faces at the top plate and again at the ceiling — four runs of 102 1/2".
 - Baseboard: ~18 linear feet
 - Cleats: rip from plywood offcuts, or pine boards if cheaper
 
-## STILL DECIDING — track light
-A track light runs along the ceiling in the 82" zone near the wall. All the heads
-are on the office side, but a junction box and a short length of rail cross onto
-the bedroom side of the divider line. Two options:
+## Track light (decided)
+A track light runs along the ceiling in the tall-ceiling (82") zone, mounted
+perpendicular to the divider — it runs front-to-back through the opening, from
+the office ceiling into the bedroom ceiling a short distance. All the heads are
+on the office side, but a junction box and a short length of rail cross the
+opening plane onto the bedroom side (see photos/track-light.jpg for the box and
+track profile).
 
-1. Cut an oversized opening in the upper panel with a 3/4" ply curb, covered by
-   removable trim held with trim-head screws. Note: a junction box must remain
-   accessible under NEC 314.29, so this isn't optional if the box stays put.
-2. Don't centre the upper panel. Bias it toward the bedroom face so more of the
-   track falls on the office side. If the box projects less than the bedroom ledge
-   depth, this dodges the problem entirely at the cost of a shallower bedroom ledge
-   (e.g. 5" bedroom / 10 3/8" office instead of 7 11/16" each).
+Position along the opening's width: standing in the bedroom looking at the
+divider, the track is on the RIGHT side of the tall-ceiling zone — i.e. near
+where the tall zone meets the ceiling step down to the 9" duct soffit (real-x
+near STEP_X, ~28 3/4" from the external wall), not near either the external
+wall or the internal wall.
 
-Help me decide once I measure how far the box projects past the wall plane.
-A third option is having an electrician shift the box 12-18" toward the office.
+Decided approach: position the upper panel's opening edge (in depth, at this
+track's width-position near the ceiling step) just on the bedroom side of the
+junction box — past the box, not cutting into it. This leaves the box fully
+exposed and accessible in the open bedroom-ceiling area beyond the panel
+(satisfies NEC 314.29 without a cutout/curb/trim assembly), while the bare
+track beyond the box continues a short way further and passes through the
+same gap — its constant, low-profile shape lets it pull through that same
+opening if the divider is ever removed, since every fastening point along it
+stays reachable from either side. Because this only affects the panel locally
+at the track's width-position (not its whole length), the box's position also
+biases the panel slightly toward the bedroom side there — a local, not
+whole-panel, off-center shift.
+
+This replaces the two previously-considered options (oversized cutout with a
+curb/trim, or biasing the whole upper panel toward the bedroom face along its
+entire length) — no cutout and no whole-panel re-centring are needed once the
+panel edge itself is placed past the box, locally, only where the track
+crosses.
+
+Still needed: the actual field measurement of the box/track's position and
+projection past the wall plane, to place this precisely in geometry.js and
+draw it in section.html. Until then this is recorded as the decided approach,
+not yet reflected in the drawings' geometry.
 
 ## Open questions to resolve
 - Wall thickness at the opening vs the 15 3/8" divider depth — how far does the

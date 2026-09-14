@@ -53,12 +53,28 @@ const xRightStile0 = xK44_1;
 const xRightStile1 = xRightStile0 + STILE;              // 104.75
 
 // ---- Upper panel + cleats (see section.html) ----
-// 1/2" MDF, stepped profile, centred in the divider's depth -> equal ledge
-// open to each room. Held by 3/4" x 1 1/2" cleats on both faces, at the top
-// plate AND again at the ceiling (four cleat runs total).
+// 1/2" paint-grade plywood (birch/poplar core, same family as the backers —
+// switched from MDF for basement moisture tolerance; kept at 1/2", not
+// dropped to the backers' 1/4", because this panel spans up to ~23"
+// unsupported between the ceiling/top-plate cleats with no backing behind
+// it, unlike the fully-supported backers), stepped profile, centred in the
+// divider's depth -> equal ledge open to each room. Held by 3/4" x 1 1/2"
+// cleats on both faces, at the top plate AND again at the ceiling (four
+// cleat runs total).
 const UPPER_PANEL_THICK = 0.5;
 const CLEAT_W = 0.75, CLEAT_H = 1.5;
 const LEDGE_DEPTH = (DIVIDER_DEPTH - UPPER_PANEL_THICK) / 2; // each side, when the panel is centred in depth — derived from DIVIDER_DEPTH so it stays correct if that's re-measured
+
+// Upper panel seams: 3 pieces (48" + 48" + 6 1/2" = 102 1/2" real panel width,
+// "between the upper jambs" per prompt.md) — placed here at 48" and 96" from
+// the opening's real-x 0, schematically flush to the opening the same way
+// drawUpperPanel() already draws the panel across the full 0..OPEN_W rather
+// than the narrower jamb-to-jamb 102 1/2"; the ~2" discrepancy vs. the
+// panel's true left edge isn't modeled, matching the drawing's existing
+// precision at this scale. Each seam is backed internally by a cleat and
+// covered on the room-facing side by a 1x2 pine cap strip (see elevation.js).
+const UPPER_PANEL_SEAM_1 = 48;
+const UPPER_PANEL_SEAM_2 = 96;
 
 // ---- The two side walls, named by which one is the foundation wall — not
 // "left"/"right", which flips meaning between rooms and is a standing
