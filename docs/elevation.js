@@ -26,13 +26,6 @@ function drawElevation(containerId, opts) {
   function X(xin) {
     return (MARGIN + (mirror ? (OPEN_W - xin) : xin)) * PXPI;
   }
-  // Xu: UNMIRRORED screen-x — real-x always increases left-to-right, regardless
-  // of `mirror`. Furniture (the desk, the Alex/desktop run) always sits against
-  // the SAME physical wall (INTERNAL_WALL_X, the divider's right-stile end —
-  // bedroom's right wall / office's left wall) and should always render on
-  // the same screen side in both rooms' elevations — so furniture uses Xu,
-  // not the divider-mirroring-aware X.
-  function Xu(xin) { return (MARGIN + xin) * PXPI; }
   function Y(yin) { return totalH - (yin + 12) * PXPI; }
 
   const g = el("g", {});
@@ -162,11 +155,12 @@ function drawElevation(containerId, opts) {
   dim(xLeftStile0, xLeftStile1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
   dim(xCenter0, xCenter1, FLOOR_Y, "3/4\"", {offset:34, size:8.5, color:"#a89570"});
   // Height dimensions go on whichever real-x end stays clear of the furniture
-  // overlay. Furniture always renders on SCREEN-RIGHT now (it's drawn with an
-  // unmirrored Xu — see below — so it always sits toward high real-x on
-  // screen, regardless of `mirror`). The clear screen-left side is real-x=0
-  // unmirrored, but real-x=OPEN_W once mirrored (mirroring flips which real
-  // coordinate lands on which screen side).
+  // overlay. Furniture is drawn against the same physical wall it actually
+  // sits at (INTERNAL_WALL_X for the bedroom desk, EXTERNAL_WALL_X for the
+  // office run — see geometry.js), using the mirror-aware X, so which screen
+  // side is clear differs by room: bedroom's desk is at high real-x (clear
+  // side is real-x=0); office's run is at low real-x (clear side is
+  // real-x=OPEN_W).
   const heightBaselineX = mirror ? OPEN_W : 0;
   vdim(FLOOR_Y, bottomPlateTop, heightBaselineX, "3/4\" base", {offset:-14, size:8.5});
   vdim(bottomPlateTop, carcassTop, heightBaselineX, "57 5/8\" carcass", {offset:-14});
@@ -175,22 +169,28 @@ function drawElevation(containerId, opts) {
   vdim(ledgeTop, CEIL_LOW, ceilStepAbs, "13 7/8\" upper (low side)", {offset:14, size:9, color:"#8a7c5f"});
 
   // ================= FURNITURE (drawn IN FRONT of the divider — same picture
-  // plane, parallel to it, not on a perpendicular wall). Uses Xu (unmirrored)
-  // rather than X, so furniture against the same physical wall
-  // (INTERNAL_WALL_X) always renders on the same screen side in both rooms'
-  // elevations. =================
+  // plane, parallel to it, not on a perpendicular wall). Uses the same
+  // mirror-aware X as the structure, so furniture renders against whichever
+  // screen side its real physical wall actually maps to: the bedroom desk
+  // (against the internal wall, high real-x) lands screen-right in the
+  // unmirrored bedroom view; the office run (against the external wall, low
+  // real-x) lands screen-right in the mirrored office view too — because
+  // mirroring flips which real-x end is on screen-right. See geometry.js's
+  // EXTERNAL_WALL_X/INTERNAL_WALL_X note for which wall each run is against.
+  // =================
   const fg = el("g", {id: toggleId});
   g.appendChild(fg);
-  const { rect: rectF, line: lineF } = boundDrawers(Xu, Y, fg);
-  const dimF = dimLineFactory(Xu, Y, fg);
+  const { rect: rectF, line: lineF } = boundDrawers(X, Y, fg);
+  const dimF = dimLineFactory(X, Y, fg);
   function textF(x,y,str,size,fopts){ fg.appendChild(text(x,y,str,size,fopts)); }
 
   // Passed as ROOM_H for backward compat with bedroom.html/office.html's
   // furniture callbacks, but now holds CEIL_HIGH (the real ceiling) rather
   // than an assumed room height — those callbacks only use it to run the
-  // dashed "internal wall" reference line up through the visible wall area,
-  // which should stop at the real ceiling, not an invented one.
-  if (drawFurniture) drawFurniture({ X: Xu, Y, rectF, lineF, dimF, textF, ROOM_H: CEIL_HIGH });
+  // dashed "internal wall"/"external wall" reference line up through the
+  // visible wall area, which should stop at the real ceiling, not an
+  // invented one.
+  if (drawFurniture) drawFurniture({ X, Y, rectF, lineF, dimF, textF, ROOM_H: CEIL_HIGH });
 
   document.getElementById(containerId).appendChild(svg);
 }

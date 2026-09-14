@@ -67,9 +67,12 @@ const LEDGE_DEPTH = (DIVIDER_DEPTH - UPPER_PANEL_THICK) / 2; // each side, when 
 //     and office's RIGHT wall are this same physical wall.
 //   - INTERNAL_WALL_X (real-x ~OPEN_W, at the divider's right-stile end):
 //     the interior partition wall. Bedroom's RIGHT wall and office's LEFT
-//     wall are this same physical wall. Both the bedroom desk and the
-//     office Alex/desktop run sit flush against the divider's own backer
-//     face (parallel to it), with one end against THIS wall.
+//     wall are this same physical wall.
+// The bedroom desk and the office Alex/desktop run sit flush against the
+// divider's own backer face (parallel to it) but are NOT against the same
+// physical wall as each other — the bedroom desk's outer edge is at the
+// internal wall; the office run's outer edge (the tall Alex) is at the
+// external wall (see prompt.md's "from right to left" office layout).
 const EXTERNAL_WALL_X = 0;
 const INTERNAL_WALL_X = xRightStile1; // 104.75
 
@@ -78,8 +81,14 @@ const BED_DESK_W = 44, BED_DESK_D = 23;
 const bedDeskX1 = INTERNAL_WALL_X, bedDeskX0 = bedDeskX1 - BED_DESK_W; // 60.75 .. 104.75
 
 // Office run: tall Alex (14 1/8") + 79" desktop (on 2 short Alex units, flush end
-// to end) = 93 1/8" total, tall Alex's right side at the internal wall, back
-// against the divider (spans most of the 4x3 backer and into the 4x4's open shelves).
+// to end) = 93 1/8" total. Per prompt.md's office layout ("from right to left:
+// tall Alex, short Alex, desk... ~12" gap between the wall and the left of the
+// desk") the tall Alex is at the office's right, which is the EXTERNAL wall
+// side (office's right wall / bedroom's left wall are the same physical
+// foundation wall — see the EXTERNAL_WALL_X/INTERNAL_WALL_X note above). So
+// the run starts flush at EXTERNAL_WALL_X, leaving the ~12" gap at the
+// internal-wall end, back against the divider (spans most of the 4x3 backer
+// and into the 4x4's open shelves).
 const ALEX_W = 14.125, ALEX_H_SHORT = 27.5, ALEX_H_TALL = 45.5, DESK_LEN = 79, DESK_DEPTH = 22.875;
 const OFFICE_RUN_LEN = ALEX_W + DESK_LEN; // 93.125
-const officeRunX1 = INTERNAL_WALL_X, officeRunX0 = officeRunX1 - OFFICE_RUN_LEN; // 11.625 .. 104.75
+const officeRunX0 = EXTERNAL_WALL_X, officeRunX1 = officeRunX0 + OFFICE_RUN_LEN; // 0 .. 93.125

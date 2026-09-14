@@ -28,11 +28,10 @@
 <script>
 // Coordinate frame: X = real divider-frame x (0..OPEN_W), MIRRORED so this
 // view reads 4x4-left/4x3-right — matching how office.html shows them — for
-// both rows (this is a deliberate choice: it makes the plan easy to compare
-// against either elevation page, at the cost of the top and bottom rows no
-// longer sharing one true physical left-right axis; see CLAUDE.md). Y = depth:
-// the divider footprint sits centered, bedroom-side furniture projects UP
-// (negative depth, toward the bedroom) and office-side furniture projects
+// both rows AND the office furniture run (one shared axis, since real-x 0 is
+// consistently the external wall end in every view — see geometry.js). Y =
+// depth: the divider footprint sits centered, bedroom-side furniture projects
+// UP (negative depth, toward the bedroom) and office-side furniture projects
 // DOWN (positive depth, toward the office) — both furniture pieces are flush
 // against the divider's own backer face, not a perpendicular wall, so they
 // read as parallel strips here.
@@ -54,17 +53,6 @@ function drawPlan(containerId) {
   function Y(depth) { return (depth + marginTop) * PXPI; }
   const { rect, line } = boundDrawers(X, Y, g);
   const dimP = dimLineFactory(X, Y, g);
-
-  // The office row alone un-mirrors back to real-x order (X's mirror undone),
-  // so the Alex/desktop run reads left-to-right exactly as it does standing
-  // in the office looking at the divider — gap, desk-on-short-Alexes, tall
-  // Alex against the internal wall — landing screen-right, same side
-  // office.html draws it. This intentionally breaks from the bedroom row /
-  // KALLAX labeling, which stay on the plan's normal mirrored axis (internal
-  // wall stays drawn screen-left there) — see prompt.md's room-contents
-  // section for the office's actual left-to-right order this mirrors.
-  function Xoffice(xin) { return (marginX + xin) * PXPI; }
-  const { rect: rectOffice } = boundDrawers(Xoffice, Y, g);
 
   g.appendChild(text(X(OPEN_W/2), Y(-bedFurnDepth)-26, "Bedroom (Room A)", 10, {fill:"#999"}));
   g.appendChild(text(X(OPEN_W/2), Y(DIVIDER_DEPTH+officeFurnDepth)+14, "Office (Room B)", 10, {fill:"#999"}));
@@ -117,13 +105,16 @@ function drawPlan(containerId) {
     g.appendChild(text(X((xK44_0+bedDeskX0)/2), Y(-4), `${(bedDeskX0-xK44_0).toFixed(1)}" backer exposed`, 8, {fill:"#c47a3f"}));
   }
 
-  // Office run footprint — drawn on the un-mirrored Xoffice axis (see above),
-  // so it lands screen-right regardless of the KALLAX row's mirrored axis.
+  // Office run footprint — tall Alex end at officeRunX0 (the external wall,
+  // real-x 0), desk end at officeRunX1 trailing toward the internal wall with
+  // the ~12" gap beyond it (see geometry.js). Uses the plan's normal mirrored
+  // X axis, same as the KALLAX row, so it lands screen-right — matching
+  // office.html, where the tall Alex/external wall is also screen-right.
   const runD0 = DIVIDER_DEPTH, runD1 = DIVIDER_DEPTH + DESK_DEPTH;
-  rectOffice(officeRunX0, officeRunX1, runD0, runD1, {fill:"#cfe0f0", stroke:"#3f6a8a","stroke-width":1.5});
-  g.appendChild(text(Xoffice((officeRunX0+officeRunX1)/2), Y(runD0+DESK_DEPTH/2)+3, "Alex + desktop run 93 1/8\"", 9, {fill:"#2d4d66"}));
-  if (officeRunX0 > xK43_0) {
-    g.appendChild(text(Xoffice((xK43_0+officeRunX0)/2), Y(runD0+DESK_DEPTH+12), `${(officeRunX0-xK43_0).toFixed(1)}" shelving stays open`, 8, {fill:"#4a7a9c"}));
+  rect(officeRunX0, officeRunX1, runD0, runD1, {fill:"#cfe0f0", stroke:"#3f6a8a","stroke-width":1.5});
+  g.appendChild(text(X((officeRunX0+officeRunX1)/2), Y(runD0+DESK_DEPTH/2)+3, "Alex + desktop run 93 1/8\"", 9, {fill:"#2d4d66"}));
+  if (officeRunX1 < xK44_1) {
+    g.appendChild(text(X((officeRunX1+xK44_1)/2), Y(runD0+DESK_DEPTH+12), `${(xK44_1-officeRunX1).toFixed(1)}" shelving stays open`, 8, {fill:"#4a7a9c"}));
   }
 
   dimP(0, OPEN_W, -bedFurnDepth, `${inchLabel(OPEN_W)} opening`, {offset:-16});
