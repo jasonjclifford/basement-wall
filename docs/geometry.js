@@ -43,43 +43,110 @@ const ceilStepAbs = STEP_X;
 // KALLAX dimensions below are measured actuals (see measurements-checklist.md),
 // not the nominal spec sheet — the assembled units run slightly larger than
 // spec, and the drawings/cut list should reflect what's actually in the room.
-// Side gap (wall face to stile face), each side — the space the frame needs to
-// pass in front of the baseboard without notching, later filled by the wall
-// cleat. Sized as the baseboard's projection plus a little clearance.
+// ---- Width scheme: FIT-TOLERANT, not a rigid sum of KALLAX widths ----
 //
-// The opening is 105 1/4" wall to wall and the frame is 104 1/16", so there is
-// 1 3/16" of total slack = 19/32" per side. The gap therefore CANNOT exceed
-// 19/32" without the frame failing to fit, and the baseboard derives to about
-// that same 17/32" — i.e. the gap is pinned almost exactly by the geometry,
-// with very little room to choose.
+// Earlier versions sized the frame as an exact sum of the measured KALLAX
+// widths, so every measurement error and every bit of particleboard bow
+// accumulated into one go/no-go dimension with ~1/8" of slack. This version
+// deliberately builds each bay OVERSIZED, lets the units float, and covers
+// the difference with the battens that were always in the design. A gap that
+// trim hides is not a defect; a frame that won't go in is.
 //
-// That tightness is why BASEBOARD_PROUD must be measured directly rather than
-// derived: if the real baseboard is thicker than ~19/32", the frame as drawn
-// does not fit in front of it and something has to give (see reference.html's
-// "Frame-to-opening fit" for the three options). Kept at the derived value for
-// now so every drawing stays self-consistent.
-const GAP_CLEARANCE = 0.0625; // 1/16" so the frame isn't a friction fit on the trim
-const GAP = BASEBOARD_PROUD + GAP_CLEARANCE; // ~19/32" each side
-const CLEAT_THICK = GAP;     // wall cleat fills the gap; rip to the measured thickness
-const STILE = 0.75;
+// The whole scheme is governed by one fixed budget:
+//
+//   opening                      105 1/4"
+//   two KALLAX units             101 13/16"
+//   ------------------------------------
+//   budget for everything else     3 7/16"
+//
+// That 3 7/16" must contain both side members, the center stile, AND all the
+// play. It is a fixed pie — width spent on one is taken from another.
+//
+// Two decisions follow from it:
+//
+// 1. THE OUTER STILES ARE MERGED INTO THE WALL CLEATS. Formerly these were two
+//    stacked 3/4" members per side (a cleat screwed to the studs, then a stile
+//    screwed to the cleat). One member does both jobs and reclaims 3/4" per
+//    side for play. The merged member still fills the side gap in front of the
+//    baseboard, still screws to the studs, and still takes the backer edge.
+//
+// 2. THE CENTER STILE STAYS 3/4" FULL-DEPTH PLYWOOD. Widening it along the
+//    wall buys screw-holding but almost no tipping resistance: resistance to
+//    an out-of-plane push scales with the member's DEPTH INTO THE ROOM cubed,
+//    and that is DIVIDER_DEPTH (15 15/16") regardless of how wide the stile
+//    is. Full-depth plywood is ~86x stiffer than a flat 2x4 on that axis, and
+//    costs the least width, leaving the most for play. See reference.html's
+//    "Why the frame is plywood, not dimensional lumber".
 const K43_W = 44;            // measured (spec: 43 7/8")
-const CENTER_STILE = 0.75;
 const K44_W = 57.8125;       // measured, bottom-of-carcass worst case (spec: 57 7/8"; top measured 57 7/8", bottom 57 13/16")
+
+// Play per bay: the bay is cut this much wider than its unit, so the unit
+// floats rather than needing to be a press fit. Split to either side of the
+// unit as it is positioned; worst case the whole amount lands at one edge,
+// which is what BATTEN_W below must cover.
+const BAY_PLAY = 0.5;
+const BAY_43 = K43_W + BAY_PLAY;  // 44 1/2"
+const BAY_44 = K44_W + BAY_PLAY;  // 58 5/16"
+
+const CENTER_STILE = 0.75;   // full-depth plywood — see note 2 above
+
+// The merged cleat/stile at each wall takes whatever the budget leaves, split
+// evenly. Derived rather than fixed so the arithmetic cannot drift: the frame
+// always totals exactly OPEN_W by construction.
+const SIDE_MEMBER = (OPEN_W - BAY_43 - BAY_44 - CENTER_STILE) / 2; // ~3/4" each
+// The side member must still clear the baseboard it passes in front of. If a
+// direct baseboard measurement comes in thicker than this, thin the member and
+// give the difference back to BAY_PLAY (more play is harmless — the battens
+// cover it); do NOT grow the frame, which has nowhere to go.
+const CLEAT_THICK = SIDE_MEMBER;
+const STILE = SIDE_MEMBER;   // outer "stile" and cleat are now one member
+const GAP = 0;               // no separate gap: the side member fills it
 const bottomPlateTop = 0.75;
 const carcassTop = bottomPlateTop + 57.6875; // 57 11/16" — tallest of the measured KALLAX heights (57 5/8"-57 11/16"), so the frame clears every unit
 const ledgeTop = carcassTop + 0.75;
 const DIVIDER_DEPTH = 15.4375 + 0.25*2; // measured carcass depth 15 7/16" (both units) + 1/4" backer each face = 15 15/16"
 
-const xLeftStile0 = GAP;
-const xLeftStile1 = xLeftStile0 + STILE;              // 1.5
-const xK43_0 = xLeftStile1;                            // 1.5
-const xK43_1 = xK43_0 + K43_W;                          // 45.375
-const xCenter0 = xK43_1;
-const xCenter1 = xCenter0 + CENTER_STILE;               // 46.125
-const xK44_0 = xCenter1;
-const xK44_1 = xK44_0 + K44_W;                          // 104
-const xRightStile0 = xK44_1;
-const xRightStile1 = xRightStile0 + STILE;              // 104.75
+// Frame member positions, walked left to right across the opening. These are
+// BAY boundaries — the openings the frame creates — not the units themselves.
+// Real-x 0 is the left (external) wall face; the frame spans the full opening.
+const xLeftStile0 = 0;                                  // hard against the wall
+const xLeftStile1 = xLeftStile0 + SIDE_MEMBER;
+const xBay43_0 = xLeftStile1;
+const xBay43_1 = xBay43_0 + BAY_43;
+const xCenter0 = xBay43_1;
+const xCenter1 = xCenter0 + CENTER_STILE;
+const xBay44_0 = xCenter1;
+const xBay44_1 = xBay44_0 + BAY_44;
+const xRightStile0 = xBay44_1;
+const xRightStile1 = xRightStile0 + SIDE_MEMBER;        // == OPEN_W by construction
+
+// Where each KALLAX actually SITS inside its bay. Drawn centred, which is the
+// sensible default — it splits BAY_PLAY into two equal reveals the battens
+// cover either side. In the room the installer can slide a unit to one end and
+// take the whole gap at the other; the batten widths are sized for that worst
+// case, so either choice is fine.
+const xK43_0 = xBay43_0 + (BAY_43 - K43_W) / 2;
+const xK43_1 = xK43_0 + K43_W;
+const xK44_0 = xBay44_0 + (BAY_44 - K44_W) / 2;
+const xK44_1 = xK44_0 + K44_W;
+
+// ---- Battens: the pieces that make the play invisible ----
+// The batten over the center stile is the binding case. Worst case a unit is
+// pushed fully away from the stile, putting the entire BAY_PLAY as one gap at
+// that edge. The batten must cover its half of the stile, cross that gap, and
+// still land on the unit with something to spare:
+//
+//   overlap onto the unit = BATTEN_W/2 - CENTER_STILE/2 - BAY_PLAY
+//
+// 1x3 (2 1/2") gives 1/2" of overlap at BAY_PLAY = 1/2"; 1x2 (1 1/2") gives
+// none and is not an option. 1x3 is the minimum, 1x4 the comfortable choice.
+const BATTEN_W = 3.5;        // 1x4 nominal (actual 3 1/2")
+const BATTEN_THICK = 0.75;
+const battenOverlapCenter = BATTEN_W/2 - CENTER_STILE/2 - BAY_PLAY;
+// At the walls the same batten covers the side member and laps the unit by
+// BATTEN_W - SIDE_MEMBER - BAY_PLAY, which is far larger — the walls were
+// never the tight case.
+const battenOverlapWall = BATTEN_W - SIDE_MEMBER - BAY_PLAY;
 
 // ---- Upper panel + cleats (see section.html) ----
 // 1/2" paint-grade plywood (birch/poplar core, same family as the backers —

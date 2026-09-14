@@ -84,8 +84,11 @@ function drawPlan(containerId) {
       rect(cx-battenW/2, cx+battenW/2, d0, d1, {fill:"#faf7ef", stroke:"#9c8f6f","stroke-width":0.6});
     });
   }
-  drawBackerFace(xK43_0, xK43_1, true, 1, "#cfe0f0");   // 4x3 backer faces the office, 1 board — tinted to match the office's blue elsewhere on this page
-  drawBackerFace(xK44_0, xK44_1, false, 2, "#f6d7dd");  // 4x4 backer faces the bedroom, 2 boards (pink)
+  // Backers span the BAY (stile to stile), not just the unit — that way each
+  // one closes its bay including the play either side of the KALLAX, and its
+  // edges land on stile face where the battens cover them.
+  drawBackerFace(xBay43_0, xBay43_1, true, 1, "#cfe0f0");   // 4x3 backer faces the office, 1 board — tinted to match the office's blue elsewhere on this page
+  drawBackerFace(xBay44_0, xBay44_1, false, 2, "#f6d7dd");  // 4x4 backer faces the bedroom, 2 boards (pink)
 
   g.appendChild(text(X((xK43_0+xK43_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x3", 9, {fill:"#6b5d3f"}));
   g.appendChild(text(X((xK44_0+xK44_1)/2), Y(DIVIDER_DEPTH/2)+3, "KALLAX 4x4", 9, {fill:"#6b5d3f"}));

@@ -94,7 +94,8 @@ function drawElevation(containerId, opts) {
     }
   }
 
-  const BATTEN_W = 2.5; // 1x3 stock, actual width
+  // BATTEN_W comes from geometry.js — it is sized to cover the KALLAX bay
+  // play in the worst case, so it must not be hardcoded here.
   const battenStyle = {fill:"#faf7ef", stroke:"#9c8f6f", "stroke-width":0.75};
   function drawBatten(cx, top) {
     rectIn(cx-BATTEN_W/2, cx+BATTEN_W/2, bottomPlateTop, top, battenStyle);
@@ -123,9 +124,16 @@ function drawElevation(containerId, opts) {
     }
   }
 
+  // One batten centred on each stile. These are what hide the bay play: the
+  // KALLAX floats in a bay cut BAY_PLAY wider than the unit, and the batten
+  // laps from the stile onto the unit far enough to cover that reveal even
+  // when the unit is pushed fully to one end. Each stile has its own width,
+  // so the centre is computed per stile rather than assuming one thickness.
   function drawStileTrim() {
     const top = carcassTop;
-    [xLeftStile0, xCenter0, xRightStile0].forEach(s0 => drawBatten((s0 + (s0+STILE))/2, top));
+    [[xLeftStile0, xLeftStile1],
+     [xCenter0, xCenter1],
+     [xRightStile0, xRightStile1]].forEach(([a,b]) => drawBatten((a+b)/2, top));
   }
 
   function drawUpperPanel() {
@@ -165,14 +173,16 @@ function drawElevation(containerId, opts) {
   // ---- Assemble by side ----
   if (!mirror) {
     drawKallax(xK43_0, xK43_1, true, "#fff");
-    drawBoardBatten(xK44_0, xK44_1, "#f6d7dd", 2);
+    // Backer spans the BAY, not the unit — it closes the play either side.
+    drawBoardBatten(xBay44_0, xBay44_1, "#f6d7dd", 2);
     drawStileTrim();
     drawUpperPanel();
     g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 (open shelves)", 11));
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 backer — pink board & batten", 11));
   } else {
     drawKallax(xK44_0, xK44_1, true, "#fff");
-    drawBoardBatten(xK43_0, xK43_1, "#e9e3d3", 1);
+    // Backer spans the BAY, not the unit — it closes the play either side.
+    drawBoardBatten(xBay43_0, xBay43_1, "#e9e3d3", 1);
     drawStileTrim();
     drawUpperPanel();
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 (open shelves)", 11));
@@ -210,7 +220,13 @@ function drawElevation(containerId, opts) {
   // gets cut to. Replaces a former "inside casing" callout: this opening has
   // no casing, and the old floor-level baseboard-to-baseboard reading it drew
   // was never a constraint on the frame. See geometry.js's opening notes.
-  dim(xLeftStile0, xRightStile1, CEIL_HIGH+2, `${inchLabel(xRightStile1-xLeftStile0)} frame overall`, {offset:22, size:9.5, color:"#a89570"});
+  // The frame now spans the full opening (the outer stiles ARE the wall
+  // cleats, hard against each wall), so an overall-frame dimension would just
+  // repeat the opening above. Call out the two bays instead — those are the
+  // numbers the frame is actually built to, each cut oversized so its KALLAX
+  // floats. See geometry.js's width-scheme note.
+  dim(xBay43_0, xBay43_1, CEIL_HIGH+2, `${inchLabel(BAY_43)} bay`, {offset:22, size:9, color:"#a89570"});
+  dim(xBay44_0, xBay44_1, CEIL_HIGH+2, `${inchLabel(BAY_44)} bay`, {offset:22, size:9, color:"#a89570"});
   if (!mirror) {
     dim(xK43_0, xK43_1, FLOOR_Y, inchLabel(K43_W), {offset:18});
     dim(xK44_0, xK44_1, FLOOR_Y, inchLabel(K44_W), {offset:18});

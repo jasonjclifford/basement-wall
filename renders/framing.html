@@ -24,12 +24,13 @@
 </div>
 
 <div class="panel">
-<h2>Wall support detail — side gap &amp; cleat (either end, both are 3/4")</h2>
+<h2>Wall support detail — the outer stile, which is also the wall cleat</h2>
 <div class="wall-detail-row">
-  <div><div id="wall-detail-plan"></div><p class="fig-caption">Looking down (plan) — wall to stile</p></div>
+  <div><div id="wall-detail-plan"></div><p class="fig-caption">Looking down (plan) — wall to KALLAX bay</p></div>
   <div><div id="wall-detail-elev"></div><p class="fig-caption">Looking at the wall (elevation) — baseboard to ceiling</p></div>
 </div>
-<p class="note">The whole assembly sits 3/4" clear of each side wall so it passes in front of the baseboard without notching. Above the baseboard, that 3/4" gap takes a cleat screwed into the studs — this is both the light seal and the lag point for the stiles. Below the cleat, the baseboard fills the gap. The stile itself is screwed to the cleat through its face (driven from the room side before the backer panel goes on) — not through the cleat from inside the gap.</p>
+<p class="note"><b>Why this is one member and not two.</b> An earlier version of this design had a 3/4" wall cleat screwed to the studs, and then a separate 3/4" stile screwed to the face of that cleat — two stacked pieces at each wall. They have been merged into a single member that does both jobs: it screws to the studs, it takes the backer edge, and it fills the space in front of the baseboard so the frame needs no notching.</p>
+<p class="note">The reason is width. The opening is 105 1/4" and the two KALLAX units are 101 13/16" of that, which leaves only <b>3 7/16"</b> for every other vertical member plus all the fitting slack. Merging the cleat and stile reclaims 3/4" at each wall — and that reclaimed 1 1/2" is exactly what pays for the play in the KALLAX bays that makes this build forgiving. See the build reference's "How the width budget is spent".</p>
 </div>
 
 <script src="geometry.js"></script>
@@ -134,20 +135,10 @@ function drawFraming(containerId) {
   g.appendChild(text(X((xK44_0+xK44_1)/2), Y((bottomPlateTop+carcassTop)/2)-6, "KALLAX 4x4", 10, {fill:"#999"}));
   g.appendChild(text(X((xK44_0+xK44_1)/2), Y((bottomPlateTop+carcassTop)/2)+8, "(infill, not structural)", 8, {fill:"#bbb"}));
 
-  // ---- Wall cleats at each side gap, above the baseboard — see the detail
-  // view below for the full section; here just marked in plan-elevation as a
-  // thin strip in the 3/4" side gap. The right wall sits slightly beyond
-  // xRightStile1+GAP (OPEN_W measured a bit wider than the designed 3/4" gap
-  // needs — see geometry.js) so the cleat/gap is drawn to its designed 3/4",
-  // with the small extra shown separately as unallocated reveal, not folded
-  // into the cleat. ----
-  const baseboardH = 5/8; // baseboard proud, per prompt.md
-  const wallR = xRightStile1 + GAP; // designed right-wall gap edge (3/4" past the stile)
-  rect(0, xLeftStile0, baseboardH, stileTop, {fill:"#e8dfc8", stroke:"#a8977a","stroke-width":1});
-  rect(xRightStile1, wallR, baseboardH, stileTop, {fill:"#e8dfc8", stroke:"#a8977a","stroke-width":1});
-  if (OPEN_W > wallR + 0.05) {
-    rect(wallR, OPEN_W, baseboardH, stileTop, {fill:"none", stroke:"#c9bda0","stroke-width":1, "stroke-dasharray":"2,2"});
-  }
+  // ---- There is no separate wall cleat any more: the outer stile and the
+  // wall cleat are now ONE member, hard against the wall, spanning
+  // 0..xLeftStile1 (and xRightStile0..OPEN_W). It is drawn as a stile below
+  // with the other two. See geometry.js's width-scheme note. ----
 
   // ---- Labels: the stiles, centre stile, and wall cleats are all only 3/4"
   // wide on screen — far too narrow to hold in-place text — so they're called
@@ -159,13 +150,11 @@ function drawFraming(containerId) {
     line(fromX, fromY, midX, fromY, {stroke:"#8a7a55","stroke-width":0.75});
     g.appendChild(text(X(midX) + (anchor==="end"?-3:3), Y(fromY)+3, lbl, opts.size||8.5, {fill: opts.color||"#4a3f2c", anchor}));
   }
-  const leftMarginX = -xLeftStile0*1.6;   // out past the left casing, in the page margin
-  const rightMarginX = OPEN_W + (OPEN_W-xRightStile1)*1.6 + 10; // out past the right casing
-  callout(xLeftStile0/2, stileTop*0.15, leftMarginX, "wall cleat");
-  callout((xLeftStile0+xLeftStile1)/2, stileTop*0.35, leftMarginX, "stile");
+  const leftMarginX = -12;                 // out in the left page margin
+  const rightMarginX = OPEN_W + 12;        // out in the right page margin
+  callout((xLeftStile0+xLeftStile1)/2, stileTop*0.30, leftMarginX, "outer stile (= wall cleat)");
   callout((xCenter0+xCenter1)/2, stileTop*0.62, leftMarginX, "centre stile");
-  callout((xRightStile0+xRightStile1)/2, stileTop*0.35, rightMarginX, "stile");
-  callout((xRightStile1+OPEN_W)/2, stileTop*0.15, rightMarginX, "wall cleat");
+  callout((xRightStile0+xRightStile1)/2, stileTop*0.30, rightMarginX, "outer stile (= wall cleat)");
 
   // ---- Plate labels ----
   const platePieceL = inchLabel(bpSpliceX - xLeftStile0), platePieceR = inchLabel(xRightStile1 - bpSpliceX);
@@ -176,9 +165,10 @@ function drawFraming(containerId) {
 
   // ---- Dimensions ----
   dim(0, OPEN_W, ROOM_H+14, `${inchLabel(OPEN_W)} opening (wall to wall)`, {offset:6, size:10});
-  dim(xLeftStile0, xRightStile1, ROOM_H+14, `${inchLabel(xRightStile1-xLeftStile0)} frame (inside casing)`, {offset:22, size:9, color:"#a89570"});
-  dim(0, xLeftStile0, FLOOR_Y, `${inchLabel(GAP)} gap`, {offset:-34, size:8, color:"#8a7c5f"});
-  dim(xRightStile1, wallR, FLOOR_Y, `${inchLabel(GAP)} gap`, {offset:-34, size:8, color:"#8a7c5f"});
+  // The bays are the numbers that matter now — each is cut oversized so its
+  // KALLAX floats, with the battens covering the difference.
+  dim(xBay43_0, xBay43_1, ROOM_H+14, `${inchLabel(BAY_43)} bay (4x3 + ${inchLabel(BAY_PLAY)} play)`, {offset:22, size:8.5, color:"#a89570"});
+  dim(xBay44_0, xBay44_1, ROOM_H+14, `${inchLabel(BAY_44)} bay (4x4 + ${inchLabel(BAY_PLAY)} play)`, {offset:22, size:8.5, color:"#a89570"});
   dim(xLeftStile0, xLeftStile1, FLOOR_Y, inchLabel(STILE), {offset:34, size:8, color:"#a89570"});
   dim(xCenter0, xCenter1, FLOOR_Y, inchLabel(CENTER_STILE), {offset:34, size:8, color:"#a89570"});
   dim(xRightStile0, xRightStile1, FLOOR_Y, inchLabel(STILE), {offset:34, size:8, color:"#a89570"});
@@ -214,11 +204,11 @@ const BASEBOARD_FILL = "#e8dfc8", BASEBOARD_STROKE = "#a8977a";
 function drawWallDetailPlan(containerId) {
   const PXPI = 30;
   const wallT = 3;               // wall thickness, drawn context-only
-  const gapW = GAP;              // 3/4" — the headline dimension of this whole detail
-  const stileShown = 2;          // how much of the stile to draw, for context
-  // Extra headroom above and below the strips for the "3/4" gap" dimension
-  // and the wall/cleat/stile callouts — the strips themselves are too narrow
-  // (3/4" = 22.5px for the cleat) to hold any label in place.
+  const gapW = SIDE_MEMBER;      // the merged outer stile / wall cleat
+  const stileShown = 2;          // how much of the adjacent KALLAX bay to draw, for context
+  // Extra headroom above and below the strips for the dimension and the
+  // wall/member callouts — the strips themselves are too narrow to hold any
+  // label in place.
   const marginX = 3, marginTop = 8, marginBottom = 7;
   const totalW = (wallT + gapW + stileShown + marginX*2) * PXPI;
   const totalH = (DIVIDER_DEPTH + marginTop + marginBottom) * PXPI;
@@ -237,19 +227,20 @@ function drawWallDetailPlan(containerId) {
   // is the room-facing front edge, "down" is the far/back face) ----
   g.appendChild(text(X((gapW+stileShown)/2), Y(-4.5), "↑ room side", 8, {fill:"#999"}));
 
-  // ---- Wall (stud wall the cleat screws into) ----
+  // ---- Wall (stud wall the outer member screws into) ----
   rect(-wallT, 0, 0, DIVIDER_DEPTH, {fill: WALL_FILL, stroke: WALL_STROKE, "stroke-width":1});
 
-  // ---- Cleat fills the full side gap x full divider depth ----
+  // ---- The merged outer stile / wall cleat: ONE member, full divider
+  // depth, hard against the wall. Formerly this was two stacked 3/4" pieces
+  // (a cleat screwed to the studs, then a stile screwed to the cleat); one
+  // member does both jobs and gives 3/4" per side back to the bay play. ----
   rect(0, gapW, 0, DIVIDER_DEPTH, {fill: CLEAT_FILL, stroke: CLEAT_STROKE, "stroke-width":1.5});
 
-  // ---- Stile, shown clipped at stileShown for context ----
+  // ---- The KALLAX bay beyond it, shown clipped for context ----
   rect(gapW, gapW+stileShown, 0, DIVIDER_DEPTH, {fill: STILE_FILL, stroke: STILE_STROKE, "stroke-width":1.5});
 
-  // ---- The headline dimension: the side gap, spanning wall to stile.
-  // Sized from the measured baseboard projection, not a nominal 3/4" — see
-  // geometry.js's GAP. ----
-  dim(0, gapW, -0.3, `${inchLabel(gapW)} gap`, {offset:-16, size:9, color:"#4a3f2c"});
+  // ---- The headline dimension: the merged member's thickness. ----
+  dim(0, gapW, -0.3, `${inchLabel(gapW)} outer stile`, {offset:-16, size:9, color:"#4a3f2c"});
 
   // ---- Callouts below the strips, each a short leader line straight down
   // to one label row — plenty of room since labels sit in open margin
@@ -260,8 +251,8 @@ function drawWallDetailPlan(containerId) {
     g.appendChild(text(X(midX), Y(DIVIDER_DEPTH+3)+10, lbl, 8.5, {fill: color}));
   }
   callout(-wallT/2, "wall", "#6b5d47");
-  callout(gapW/2, "cleat", "#4a3f2c");
-  callout(gapW+stileShown/2, "stile", "#4a3f2c");
+  callout(gapW/2, "outer stile", "#4a3f2c");
+  callout(gapW+stileShown/2, "KALLAX bay", "#4a3f2c");
   g.appendChild(text(X(gapW+stileShown+0.4), Y(DIVIDER_DEPTH/2), `${inchLabel(DIVIDER_DEPTH)} deep`, 8, {fill:"#8a7c5f", anchor:"start", attrs:{transform:`rotate(-90 ${X(gapW+stileShown+0.4)} ${Y(DIVIDER_DEPTH/2)})`}}));
 
   document.getElementById(containerId).appendChild(svg);
@@ -302,9 +293,9 @@ function drawWallDetailElevation(containerId) {
   // ---- Baseboard fills the gap at the floor ----
   rect(stileShown, stileShown+gapW, 0, baseboardH, {fill: BASEBOARD_FILL, stroke: BASEBOARD_STROKE, "stroke-width":1});
 
-  // ---- Cleat sits directly above the baseboard, filling the same gap,
-  // continuing up past the top of this cropped view (torn edge = "continues
-  // to top plate") ----
+  // ---- The outer stile/cleat sits directly above the baseboard, in the same
+  // plane, continuing up past the top of this cropped view (torn edge =
+  // "continues to top plate") ----
   rect(stileShown, stileShown+gapW, baseboardH, drawH, {fill: CLEAT_FILL, stroke: CLEAT_STROKE, "stroke-width":1.5});
   // torn-edge tick marks at the top of the view, signalling "continues up"
   [0.2, 0.5, 0.8].forEach(f => {
@@ -313,25 +304,24 @@ function drawWallDetailElevation(containerId) {
   g.appendChild(text(X(stileShown+gapW/2), Y(drawH)-8, "continues to", 7.5, {fill:"#8a7c5f", anchor:"middle"}));
   g.appendChild(text(X(stileShown+gapW/2), Y(drawH)+1, "top plate", 7.5, {fill:"#8a7c5f", anchor:"middle"}));
 
-  // ---- Stile — a sliver at the room-facing edge, torn at the left, so the
-  // fastening detail (screws driven from the stile face into the cleat) has
-  // something to originate from. Full stile is drawn elsewhere (plan view,
-  // main framing elevation); this is just enough to show the connection. ----
+  // ---- The KALLAX bay beyond — a sliver at the room-facing edge, torn at
+  // the left, for context. The unit floats in this bay with BAY_PLAY of
+  // slack; the batten covers the reveal. ----
   rect(0, stileShown, 0, drawH, {fill: STILE_FILL, stroke: STILE_STROKE, "stroke-width":1.5});
   [0.15, 0.5, 0.85].forEach(f => {
     g.appendChild(el("line", {x1:X(-0.09), y1:Y(drawH*f-0.4), x2:X(0.09), y2:Y(drawH*f+0.4), stroke:STILE_STROKE,"stroke-width":1}));
   });
 
-  // ---- Fastening detail (decided): screwed through the stile face into the
-  // cleat — driven from the room side before the backer panel goes on, not
-  // through the cleat from inside the gap. Three screws shown up the height,
-  // matching typical stud-screw spacing; drawn as a shaft through the
-  // stile/cleat joint with a countersunk head at the stile face. ----
+  // ---- Fastening: now a single member, so there is no stile-to-cleat joint
+  // to make. It screws straight back into the wall studs, driven from the
+  // room side before the backer goes on. Three screws up the height, matching
+  // typical stud-screw spacing; head at the room face, shaft running back
+  // into the wall. ----
   const screwColor = "#3a3226";
   [0.18, 0.5, 0.82].forEach(f => {
     const y = drawH * f;
-    line(0.05, y, stileShown+gapW*0.7, y, {stroke: screwColor, "stroke-width":1.75});
-    g.appendChild(el("circle", {cx:X(0.05), cy:Y(y), r:2, fill: screwColor}));
+    line(stileShown+gapW*0.15, y, stileShown+gapW+0.5, y, {stroke: screwColor, "stroke-width":1.75});
+    g.appendChild(el("circle", {cx:X(stileShown+gapW*0.15), cy:Y(y), r:2, fill: screwColor}));
   });
 
   // ---- Leader-line callouts into the side margins (same convention as the
@@ -346,10 +336,10 @@ function drawWallDetailElevation(containerId) {
       g.appendChild(text(X(toX) + (anchor==="end"?-3:3), Y(fromY) - (lines.length-1-i)*lineHeight + 3, lbl, opts.size||9, {fill: opts.color||"#4a3f2c", anchor}));
     });
   }
-  callout(stileShown+gapW/2, baseboardH/2, stileShown+gapW+7, ["5/8\" baseboard"], {color: BASEBOARD_STROKE});
-  callout(stileShown+gapW*0.8, baseboardH + aboveBaseboard*0.85, stileShown+gapW+7, ["cleat", "(screwed to studs)"], {color:"#4a3f2c"});
-  callout(stileShown/2, drawH*0.18, -6, ["stile"], {color:"#4a3f2c"});
-  callout(stileShown*0.6, baseboardH + aboveBaseboard*0.5, -6, ["screws,", "stile → cleat"], {color: screwColor});
+  callout(stileShown+gapW/2, baseboardH/2, stileShown+gapW+7, [`baseboard (${inchLabel(BASEBOARD_PROUD)} proud)`], {color: BASEBOARD_STROKE});
+  callout(stileShown+gapW*0.55, baseboardH + aboveBaseboard*0.92, stileShown+gapW+7, ["outer stile", "(= wall cleat)"], {color:"#4a3f2c"});
+  callout(stileShown/2, drawH*0.18, -6, ["KALLAX bay"], {color:"#4a3f2c"});
+  callout(stileShown+gapW*0.3, baseboardH + aboveBaseboard*0.5, -6, ["screws into", "wall studs"], {color: screwColor});
 
   document.getElementById(containerId).appendChild(svg);
 }
