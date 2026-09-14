@@ -101,12 +101,26 @@ function drawFraming(containerId) {
 
   // ---- Upper jambs above the top plate: left 22 7/8" (over the tall-ceiling
   // portion), right 13 7/8" (over the low/soffit portion) — drawn as open
-  // framing bays here (no upper panel/cleats — see section.html for those). ----
+  // framing bays here (no upper panel/cleats — see section.html for those),
+  // EXCEPT the center-stile blocking run below, which IS structural framing
+  // (not part of the upper panel system) and belongs on this page. ----
   rect(0, ceilStepAbs, ledgeTop, CEIL_HIGH, {fill:"none", stroke:"#a8977a","stroke-width":1, "stroke-dasharray":"4,3"});
   rect(ceilStepAbs, OPEN_W, ledgeTop, CEIL_LOW, {fill:"none", stroke:"#a8977a","stroke-width":1, "stroke-dasharray":"4,3"});
   g.appendChild(text(X(ceilStepAbs/2), Y((ledgeTop+CEIL_HIGH)/2)-6, "upper jamb", 9, {fill:"#a8977a"}));
   g.appendChild(text(X(ceilStepAbs/2), Y((ledgeTop+CEIL_HIGH)/2)+7, inchLabel(CEIL_HIGH-ledgeTop), 9, {fill:"#a8977a"}));
   g.appendChild(text(X((ceilStepAbs+OPEN_W)/2), Y((ledgeTop+CEIL_LOW)/2), `upper jamb ${inchLabel(CEIL_LOW-ledgeTop)}`, 9, {fill:"#a8977a"}));
+
+  // ---- Center-stile blocking run + ceiling bracket (tipping restraint) ----
+  // The center stile itself stops at ledgeTop like the other two — it does
+  // NOT run to the ceiling. This blocking run is a separate member (same
+  // 3/4" x 1 1/2" stock as the upper panel's seam blocking, but this one
+  // carries no panel seam — its only job is giving the ceiling bracket
+  // something to land on). See geometry.js's CENTER_BLOCKING_X and
+  // reference.html's "Structural review findings" for the force path.
+  rect(CENTER_BLOCKING_X-0.375, CENTER_BLOCKING_X+0.375, ledgeTop, CEIL_LOW, frameColor);
+  line(CENTER_BLOCKING_X-2, CEIL_LOW, CENTER_BLOCKING_X+2, CEIL_LOW, {stroke:"#4a3f2c","stroke-width":2});
+  g.appendChild(text(X(CENTER_BLOCKING_X)+8, Y(ledgeTop)-10, "blocking + ceiling", 8, {fill:"#6b5d3f", anchor:"start"}));
+  g.appendChild(text(X(CENTER_BLOCKING_X)+8, Y(ledgeTop)-1, "bracket (not the stile)", 8, {fill:"#6b5d3f", anchor:"start"}));
 
   // ---- KALLAX infill outlines (context only — not structural, drawn faint) ----
   [[xK43_0,xK43_1], [xK44_0,xK44_1]].forEach(([x0,x1]) => {
