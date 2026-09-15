@@ -175,7 +175,11 @@ function drawFraming(containerId) {
   vdim(FLOOR_Y, bottomPlateTop, 0, `${inchLabel(bottomPlateTop)} bottom plate`, {offset:-14, size:8.5});
   vdim(bottomPlateTop, stileTop, 0, `${inchLabel(stileTop-bottomPlateTop)} stile`, {offset:-14, size:9});
   vdim(topPlateBottom, topPlateTop, 0, `${inchLabel(topPlateTop-topPlateBottom)} top plate`, {offset:-14, size:8.5});
-  vdim(topPlateTop, CEIL_HIGH, ceilStepAbs, `${inchLabel(CEIL_HIGH-topPlateTop)} jamb`, {offset:14, size:8.5, color:"#8a7c5f"});
+  // NOTE: no vertical dimension for the tall jamb here. One used to be drawn
+  // at ceilStepAbs, but the jamb's height is already labelled in place inside
+  // its own bay (above), so it was a duplicate — and being drawn ON the
+  // ceiling-step line it visually split the tall zone, making the upper area
+  // read as three bays when there are only two.
 
   document.getElementById(containerId).appendChild(svg);
 }
