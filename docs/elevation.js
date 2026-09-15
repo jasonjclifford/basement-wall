@@ -115,12 +115,12 @@ function drawElevation(containerId, opts) {
     const top = carcassTop;
     if (nBoards === 1) {
       rectIn(x0,x1,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1.5});
-      drawBatten((x0+x1)/2, top); // decorative — no seam to cover
+      drawBatten((x0+x1)/2, capRailBottom); // decorative — no seam to cover
     } else {
       const mid = (x0+x1)/2;
       rectIn(x0,mid,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1});
       rectIn(mid,x1,bottomPlateTop,top, {fill:boardColor, stroke:"#555", "stroke-width":1});
-      drawBatten((x0+x1)/2, top); // covers the seam between the two boards
+      drawBatten((x0+x1)/2, capRailBottom); // covers the seam between the two boards
     }
   }
 
@@ -129,11 +129,25 @@ function drawElevation(containerId, opts) {
   // laps from the stile onto the unit far enough to cover that reveal even
   // when the unit is pushed fully to one end. Each stile has its own width,
   // so the centre is computed per stile rather than assuming one thickness.
+  // Verticals stop UNDER the cap rail (capRailBottom), not at carcassTop —
+  // the rail is one continuous piece per face and the battens run up into it.
   function drawStileTrim() {
-    const top = carcassTop;
     [[xLeftStile0, xLeftStile1],
      [xCenter0, xCenter1],
-     [xRightStile0, xRightStile1]].forEach(([a,b]) => drawBatten((a+b)/2, top));
+     [xRightStile0, xRightStile1]].forEach(([a,b]) => drawBatten((a+b)/2, capRailBottom));
+  }
+
+  // The horizontal cap rail: full width, at the carcass-top / top-plate line.
+  // Covers the top plate's bare plywood edge, closes the light gap left by a
+  // KALLAX shorter than the frame's design height, caps the backer's cut top
+  // edge, and gives the vertical battens something to terminate against.
+  // See geometry.js's CAP_RAIL_W note.
+  function drawCapRail() {
+    rectIn(0, OPEN_W, capRailBottom, capRailTop,
+      {fill:"#faf7ef", stroke:"#9c8f6f", "stroke-width":0.9});
+    // Lower edge drawn slightly darker so the rail reads as a member sitting
+    // proud of the face rather than a painted band.
+    lineIn(0, capRailBottom, OPEN_W, capRailBottom, {stroke:"#b5a77f","stroke-width":0.8});
   }
 
   function drawUpperPanel() {
@@ -168,6 +182,7 @@ function drawElevation(containerId, opts) {
     // Backer spans the BAY, not the unit — it closes the play either side.
     drawBoardBatten(xBay44_0, xBay44_1, "#f6d7dd", 2);
     drawStileTrim();
+    drawCapRail();   // after the battens so it reads as capping them
     drawUpperPanel();
     g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 (open shelves)", 11));
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 backer — pink board & batten", 11));
@@ -176,6 +191,7 @@ function drawElevation(containerId, opts) {
     // Backer spans the BAY, not the unit — it closes the play either side.
     drawBoardBatten(xBay43_0, xBay43_1, "#e9e3d3", 1);
     drawStileTrim();
+    drawCapRail();   // after the battens so it reads as capping them
     drawUpperPanel();
     g.appendChild(text((X(xK44_0)+X(xK44_1))/2, Y(carcassTop)+18, "KALLAX 4x4 (open shelves)", 11));
     g.appendChild(text((X(xK43_0)+X(xK43_1))/2, Y(carcassTop)+18, "KALLAX 4x3 backer — board & batten (color TBD)", 11));

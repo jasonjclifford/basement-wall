@@ -142,6 +142,44 @@ const xK44_1 = xK44_0 + K44_W;
 // none and is not an option. 1x3 is the minimum, 1x4 the comfortable choice.
 const BATTEN_W = 3.5;        // 1x4 nominal (actual 3 1/2")
 const BATTEN_THICK = 0.75;
+
+// ---- Cap rail: the horizontal member at the top of the KALLAX ----
+// Runs the full width on BOTH room faces, at the carcass-top / top-plate
+// line. This is not decorative trim — it closes four separate gaps that
+// nothing else in the design covers:
+//
+//   1. The top plate presents a bare 3/4" plywood EDGE to each room,
+//      ~105" long, at eye level. Every other visible surface on these
+//      faces is finished (paint-grade backer face, primed pine batten);
+//      without the rail there is a raw sheet edge running the full width.
+//   2. LIGHT PATH. The frame is built to the TALLEST measured KALLAX
+//      (57 11/16"), but the units measured 57 5/8"-57 11/16". A shorter
+//      unit sits up to 1/16" below the top plate, leaving an open slot the
+//      width of that bookcase. Light blocking is a primary requirement, so
+//      this is a real defect, not a cosmetic one.
+//   3. The backer's cut top edge is exposed where it meets the top plate.
+//   4. The vertical stile battens otherwise terminate in mid-air. Board and
+//      batten runs its verticals into a cap rail; without one, six battens
+//      just stop.
+//
+// Sized 1x3 (2 1/2"): covers the 3/4" plate edge and still laps 1 3/4" down
+// onto the KALLAX face, which closes any height variance with margin. On the
+// open-shelf face it crosses the top row of cubbies, costing ~12% of that
+// row's opening height — 1x4 would cost ~19%, which starts to be noticeable
+// when loading books, and 1x2 would lap only 3/4" onto the unit. 1x3 also
+// matches the backer centre battens, so the horizontal reads as a deliberate
+// member rather than an odd size.
+//
+// The vertical battens run UP INTO this rail and stop beneath it (the rail is
+// one continuous piece per face), which is standard board-and-batten practice
+// and the simplest to execute.
+const CAP_RAIL_W = 2.5;      // 1x3 nominal (actual 2 1/2")
+const CAP_RAIL_THICK = 0.75;
+const capRailTop = ledgeTop;                     // flush with the top plate's top surface
+const capRailBottom = capRailTop - CAP_RAIL_W;   // laps down onto the KALLAX face
+// How far the rail laps onto the KALLAX below the carcass top — the margin
+// that swallows unit-height variance.
+const capRailOverlapOnUnit = carcassTop - capRailBottom;
 const battenOverlapCenter = BATTEN_W/2 - CENTER_STILE/2 - BAY_PLAY;
 // At the walls the same batten covers the side member and laps the unit by
 // BATTEN_W - SIDE_MEMBER - BAY_PLAY, which is far larger — the walls were
