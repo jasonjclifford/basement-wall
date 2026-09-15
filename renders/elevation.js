@@ -140,24 +140,16 @@ function drawElevation(containerId, opts) {
     rectIn(0, ceilStepAbs, ledgeTop, CEIL_HIGH, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
     rectIn(ceilStepAbs, OPEN_W, ledgeTop, CEIL_LOW, {fill:"#efe9dc", stroke:"#8a7a55", "stroke-width":1});
     lineIn(0, ledgeTop, OPEN_W, ledgeTop, {stroke:"#6b5d3f","stroke-width":1.5});
-    // Seam between panel pieces 1 (tall zone) and 2 (low zone) falls AT the
-    // ceiling step (UPPER_PANEL_SEAM_1 === ceilStepAbs, by design — see
-    // geometry.js) so every piece is a plain rectangle, not an L-shape. The
-    // step's own boundary line (the path drawn above, before this function
-    // runs) already marks that seam; a separate highlight there would just
-    // double up on it. Only seam 2 (mid-span in the low zone) needs its own
-    // highlighted cap-strip rect, since it falls inside a flat ceiling zone
-    // with no other line marking it.
-    rectIn(UPPER_PANEL_SEAM_2 - 0.75, UPPER_PANEL_SEAM_2 + 0.75, ledgeTop, CEIL_LOW,
-      {fill:"#e9e3d3", stroke:"#9c8f6f", "stroke-width":0.75});
-    // Vertical blocking behind each seam (top plate to ceiling cleat) keeps
-    // the ~102"-wide panel from bowing between only top/bottom cleats — see
-    // geometry.js's UPPER_PANEL_SEAM_1/2 comment. Drawn as a thin stile-color
-    // strip just inside the panel line so it reads as structure, not trim.
-    [UPPER_PANEL_SEAM_1, UPPER_PANEL_SEAM_2].forEach(seamX => {
-      const blockTop = seamX <= ceilStepAbs ? CEIL_HIGH : CEIL_LOW;
-      rectIn(seamX - 0.375, seamX + 0.375, ledgeTop, blockTop, {fill:"#c9bda0", stroke:"#8a7a55", "stroke-width":0.5});
-    });
+    // The panel's single seam falls AT the ceiling step (UPPER_PANEL_SEAM_1
+    // === ceilStepAbs, by design — see geometry.js) so both pieces are plain
+    // rectangles, not L-shapes. The step's own boundary line (drawn above,
+    // before this function runs) already marks it, so no separate highlight
+    // is needed here.
+    //
+    // There is no seam blocking drawn any more: the panel is captured in a
+    // cleat channel along its whole top and bottom edge, so it cannot bow
+    // mid-span, and the blocking that used to be specified here was solving
+    // a problem that did not exist. See geometry.js.
     // Third blocking run, at the center stile's x-position — NOT a panel
     // seam, added purely so the tipping-restraint ceiling bracket has a
     // structural member to land on. The center stile stops at ledgeTop like
@@ -203,7 +195,7 @@ function drawElevation(containerId, opts) {
   // sits exactly at the ceiling step where the "9\" duct soffit" label and
   // the step's dashed line already crowd that spot. Seam 2 is safely inside
   // the flat low-ceiling zone.
-  g.appendChild(text(X(UPPER_PANEL_SEAM_2), Y(ledgeTop)+9, "1x2 cap strip + blocking at seam", 8, {fill:"#6b5d3f", anchor:"middle"}));
+  g.appendChild(text(X(UPPER_PANEL_SEAM_1), Y(ledgeTop)+9, "1x2 cap strip at seam", 8, {fill:"#6b5d3f", anchor:"middle"}));
   // Center-stile blocking + ceiling bracket label, placed just below the
   // low-ceiling line (there's clear space between the "9\" duct soffit"
   // label above and the seam label below) — this is the one blocking run

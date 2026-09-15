@@ -150,38 +150,55 @@ const battenOverlapWall = BATTEN_W - SIDE_MEMBER - BAY_PLAY;
 
 // ---- Upper panel + cleats (see section.html) ----
 // 1/2" paint-grade plywood (birch/poplar core, same family as the backers —
-// switched from MDF for basement moisture tolerance; kept at 1/2", not
-// dropped to the backers' 1/4", because this panel spans up to ~23"
-// unsupported between the ceiling/top-plate cleats with no backing behind
-// it, unlike the fully-supported backers), stepped profile, centred in the
-// divider's depth -> equal ledge open to each room. Held by 3/4" x 1 1/2"
-// cleats on both faces, at the top plate AND again at the ceiling (four
-// cleat runs total) PLUS intermediate vertical blocking at each seam (see
-// UPPER_PANEL_SEAM_1/2 below) — a 102 1/2"-wide sheet held only top and
-// bottom bows visibly over that span with nothing between; three ~26-38"
-// bays instead of one ~102" bay keeps it flat. Cheap and hidden, since the
-// seam cap strips already mark those locations on the room-facing side.
+// switched from MDF for basement moisture tolerance), stepped profile,
+// centred in the divider's depth -> equal ledge open to each room. Held by
+// 3/4" x 1 1/2" cleats on both faces, at the top plate AND again at the
+// ceiling (four cleat runs) — the panel sits in a channel rather than being
+// face-fastened, which makes install forgiving and seals light well.
+//
+// WHY 1/2" AND NOT THE BACKERS' 1/4": the backers are fully supported by the
+// KALLAX carcass behind them; this panel is a free membrane with nothing
+// behind it. The span that matters is its HEIGHT between the cleats — up to
+// CEIL_HIGH-ledgeTop (~22 15/16") in the tall zone. At 1/4" that is a ~92:1
+// span-to-thickness ratio: it would oil-can and drum whenever touched, and
+// it WILL be touched, because there is a ledge directly beneath it. At 1/2"
+// the ratio is ~46:1, which is stiff enough to feel solid.
+//
+// WHY THERE IS NO SEAM BLOCKING (simplified — this used to specify vertical
+// blocking behind each seam): an earlier version argued that "a 102 1/2"-wide
+// sheet held only top and bottom will bow over that span". That reasoning had
+// the span backwards. The panel is captured on both faces along its whole top
+// AND bottom edge — it sits in a channel, not spanning free between two
+// points. A sheet cannot bow out-of-plane mid-span when both long edges are
+// continuously restrained, unless something pushes it, and nothing does. The
+// real unsupported dimension is the panel's height (~14"-23"), over which 1/2"
+// plywood is emphatically flat: 1/2" drywall spans 16"-24" between studs held
+// only at its edges and stays flat. The blocking was solving a problem that
+// was not there, so it is gone. (The CENTER_BLOCKING_X run below stays — it is
+// not part of the panel system at all, it is the tipping load path.)
 const UPPER_PANEL_THICK = 0.5;
 const CLEAT_W = 0.75, CLEAT_H = 1.5;
 const LEDGE_DEPTH = (DIVIDER_DEPTH - UPPER_PANEL_THICK) / 2; // each side, when the panel is centred in depth — derived from DIVIDER_DEPTH so it stays correct if that's re-measured
 
-// Upper panel seams: placed at the jamb-to-jamb panel's real left edge
-// (xLeftStile1) and at the ceiling step (STEP_X), not at arbitrary round
-// numbers — putting a seam AT the step means every piece is a plain
-// rectangle. A seam at 48"/96" from real-x 0 (an earlier version of this
-// file) crosses the step at STEP_X=28.75", making the first piece an
-// L-shaped cutout with an unspecified sheet layout — see the design review
-// this replaced. Three pieces result:
-//   1. xLeftStile1 .. STEP_X   (full CEIL_HIGH height, the tall zone)
-//   2. STEP_X .. UPPER_PANEL_SEAM_2  (full CEIL_LOW height, low zone left half)
-//   3. UPPER_PANEL_SEAM_2 .. xRightStile0  (full CEIL_LOW height, low zone right half)
-// The low zone (STEP_X..xRightStile0, ~75 5/16" real span) is split roughly
-// in half rather than at a round number so both low-zone pieces land well
-// under a 48"-wide sheet with margin, and so the second seam sits mid-span
-// in the low zone for the vertical blocking to actually help (a seam near
-// either end would leave one bay nearly as wide as the whole zone).
+// Upper panel seam: ONE seam, at the ceiling step. Two pieces result:
+//   1. xLeftStile1 .. STEP_X      (full CEIL_HIGH height, the tall zone)
+//   2. STEP_X .. xRightStile0     (full CEIL_LOW height, the whole low zone)
+//
+// Putting the seam AT the step is what makes both pieces plain rectangles. A
+// seam at a round number instead (48"/96" from real-x 0, an early version of
+// this file) crosses the step at STEP_X, turning one piece into an L-shaped
+// cutout with an unspecified sheet layout.
+//
+// WHY ONLY ONE SEAM (simplified — this used to be two, splitting the low zone
+// in half): the panel is ~103 9/16" wide overall, which exceeds a 96" sheet,
+// so sheet size forces exactly ONE seam. It does not force a second. The low
+// zone as a single piece is ~75 21/32" x ~14 1/16", which fits a 4x8 sheet
+// comfortably. The second seam existed only to give the (now-removed) seam
+// blocking a mid-span place to land — with the blocking gone, the seam has no
+// job. One less panel piece, one less cap strip, one less joint to align and
+// caulk. And note the CENTER_BLOCKING_X run lands inside the low zone anyway,
+// so there is a mid-span member there regardless, for free.
 const UPPER_PANEL_SEAM_1 = STEP_X;
-const UPPER_PANEL_SEAM_2 = STEP_X + (xRightStile0 - STEP_X) / 2;
 
 // Third vertical blocking run, at the center stile's x-position — NOT a
 // panel seam (the center stile at x≈45.4-46.1" doesn't land at either seam

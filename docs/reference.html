@@ -133,6 +133,61 @@ same 3 7/16" budget, which would cut the bay play roughly in half.</p>
 <p>Paying real slack for no structural gain is a bad trade. The tipping problem
 is solved at the ceiling instead (see "Structural review findings").</p>
 
+<h3>Why the upper panel got simpler</h3>
+<p>The panel above the bookcases blocks light between the rooms. It holds
+nothing up, nothing hangs from it, and nothing sits on it. An earlier version
+of this design had it at <b>14 separate pieces</b> — three panel pieces, four
+cleat runs, three vertical blocking runs, two seam cap strips, two brackets.
+That is a lot of parts for a light barrier, and two of those items turned out
+to be solving problems that did not exist.</p>
+
+<p><b>The bow that was not going to happen.</b> The old reasoning was that "a
+102"-wide sheet held only top and bottom will bow over that span", so vertical
+blocking was added behind each seam. But that has the span backwards. The panel
+is captured in a cleat channel along its <i>entire</i> top edge and its
+<i>entire</i> bottom edge, on both faces. The unsupported dimension is not the
+103" width — it is the panel's <b>height</b> between those cleats, which is
+14 1/16" in the low zone and 22 15/16" in the tall zone. Half-inch plywood does
+not bow over 14 inches. For comparison, 1/2" drywall spans 16"–24" between
+studs held only at its edges and stays flat. A sheet cannot bow out-of-plane in
+mid-span when both long edges are continuously held, unless something pushes
+it — and nothing pushes this. <b>The seam blocking is deleted.</b></p>
+
+<p><b>The third panel piece that was not needed.</b> The panel is ~103 9/16"
+wide, which exceeds a 96" sheet, so sheet size forces exactly <i>one</i> seam.
+It does not force a second. As a single piece the whole low zone is
+~75 21/32" &times; ~14 1/16" — comfortably inside a 4x8 sheet. The second seam
+existed only to give the seam blocking a mid-span place to land; with the
+blocking gone it had no job. <b>Two panel pieces, one seam, one cap strip.</b></p>
+
+<p>Both pieces stay plain rectangles because the one remaining seam lands
+exactly at the ceiling step. That was already the right call and has not
+changed.</p>
+
+<h4>What deliberately did <i>not</i> get simplified</h4>
+<ul>
+<li><b>Still 1/2" plywood, not the backers' 1/4".</b> The backers are fully
+supported by the KALLAX carcass behind them; this panel is a free membrane with
+nothing behind it. Over the tall zone's 22 15/16" height, 1/4" gives a ~92:1
+span-to-thickness ratio — it would oil-can and drum whenever touched, and it
+<i>will</i> be touched, because there is a ledge directly below it. At 1/2" the
+ratio is ~46:1, which feels solid.</li>
+<li><b>Still four cleat runs.</b> These could drop to two by screwing the panel
+to a single cleat face, but the channel is what lets the panel simply drop into
+place instead of being held and fastened, and it seals light on both faces
+without relying on caulk. The stock is cheap and completely hidden. Not worth
+trading away for ~17 feet of 1x2.</li>
+<li><b>Still centred in the depth.</b> That yields <b>7 23/32" of ledge open to
+each room</b> — a genuine usable shelf on both sides. That is a feature, not an
+accident of the geometry.</li>
+<li><b>The centre-line blocking run and its ceiling brackets stay.</b> These
+were never part of the panel system. That run is the tipping load path — the
+thing that keeps a push near the middle of the divider from having nowhere to
+go. See "Structural review findings".</li>
+</ul>
+<p class="note">Net: <b>14 pieces down to 9</b>, with no loss of function. The
+parts that came out were the ones added to fix a misdiagnosed bow.</p>
+
 <h3>Why the plates splice in different places</h3>
 <p>The top and bottom plates are each two pieces, because no single board spans
 105" conveniently. Earlier both spliced at the <b>same</b> point, over the
@@ -157,10 +212,10 @@ material in at least one plate at every point along its width.</p>
 <tr><td>Upper jamb, low side</td><td>1</td><td>14 1/16" tall, over the remaining ~77 3/8"</td><td>framing, TBD</td><td>Over the 73 1/4"-ceiling (soffit) portion</td></tr>
 <tr><td>Top plate splice scab</td><td>1</td><td>3/4" x 15 15/16" x ~16", centered over the splice joint</td><td>3/4" plywood</td><td>Glued + screwed across the top-plate splice — see "Structural review findings"</td></tr>
 <tr><td>Center-stile ceiling brackets</td><td>2</td><td>2" x 2" x 1 1/2", 16-gauge steel angle</td><td>steel</td><td>One per face, top of the center-line blocking run (below) to ceiling — see "Structural review findings"</td></tr>
-<tr><td>Upper panel</td><td>3</td><td>27 1/4" (tall zone, full height) + two ~37 21/32" pieces (low zone, split at mid-span)</td><td>1/2" paint-grade plywood (birch/poplar)</td><td>Seams land at the ceiling step and at low-zone mid-span — every piece a plain rectangle, not an L-shape; see geometry.js</td></tr>
-<tr><td>Upper panel cleats</td><td>4 runs</td><td>3/4" x 1 1/2" x 102 1/2"</td><td>plywood or pine</td><td>Both faces, at the top plate and again at the ceiling</td></tr>
-<tr><td>Upper panel vertical blocking</td><td>3 runs (2 at seams, 1 over the center stile)</td><td>3/4" x 1 1/2" — two at 22 15/16"/14 1/16" (seam heights), one at 14 1/16" (center-stile run, low-ceiling zone)</td><td>plywood or pine</td><td>Seam runs stop the ~102"-wide panel from bowing; the center-stile run carries no seam but is the structural path for the ceiling brackets above — see "Structural review findings"</td></tr>
-<tr><td>Upper panel seam cap strips</td><td>2</td><td>1x2 stock, full panel height (ledgeTop to ceiling)</td><td>1x2 primed pine</td><td>Covers each of the 2 seams between panel pieces, room-facing side</td></tr>
+<tr><td>Upper panel</td><td><b>2</b></td><td>~27 29/32" x 22 15/16" (tall zone) + ~75 21/32" x 14 1/16" (whole low zone)</td><td>1/2" paint-grade plywood (birch/poplar)</td><td><b>One seam, at the ceiling step</b> — both pieces plain rectangles, not L-shapes. Simplified from 3 pieces; see "Why the upper panel got simpler"</td></tr>
+<tr><td>Upper panel cleats</td><td>4 runs</td><td>3/4" x 1 1/2" x ~103 9/16"</td><td>plywood or pine</td><td>Both faces, at the top plate and again at the ceiling. <b>Kept at 4</b> — the panel sits in a channel rather than being face-screwed, which makes install forgiving and seals light; the stock is cheap and hidden</td></tr>
+<tr><td>Centre-line blocking run</td><td><b>1</b></td><td>3/4" x 1 1/2" x 14 1/16", at the centre stile's x-position</td><td>plywood or pine</td><td><b>Not part of the panel system</b> — this is the tipping load path, the member the ceiling brackets land on. The two former seam-blocking runs are deleted; see "Why the upper panel got simpler"</td></tr>
+<tr><td>Upper panel seam cap strip</td><td><b>1</b></td><td>1x2 stock, full panel height (ledge to ceiling)</td><td>1x2 primed pine</td><td>Covers the single seam at the ceiling step, room-facing side (one per face)</td></tr>
 <tr><td>4x3 backer (office face)</td><td>1</td><td>~44 1/2" x 57 11/16" — cut to the <b>bay</b>, not the unit</td><td>1/4" paint-grade plywood (birch/poplar)</td><td>Faces the office — 4x3's shelves open to the bedroom. Spans stile to stile so it closes the bay including the play either side of the unit</td></tr>
 <tr><td>4x4 backer (bedroom face)</td><td>2</td><td>~29 1/8" x 57 11/16" each — halves of the <b>bay</b> width</td><td>1/4" paint-grade plywood (birch/poplar)</td><td>Faces the bedroom — 4x4's shelves open to the office</td></tr>
 <tr><td>Stile battens</td><td>3 per face (6 total)</td><td>3/4" x 3 1/2" (<b>1x4</b> stock), full stile height</td><td>1x4 primed pine</td><td>One centred over each stile. <b>These are what hide the bay play</b> — widened from 1x3 to 1x4 for margin. See "How the battens absorb the slack"</td></tr>
@@ -174,12 +229,12 @@ material in at least one plate at every point along its width.</p>
 <div class="panel">
 <h2 style="margin-top:0">Materials estimate</h2>
 <ul>
-<li>3/4" plywood: 3 sheets (2 if the wall cleats are ripped to 1x4 pine instead) — includes the top-plate splice scab and the upper-panel vertical blocking, both added by the structural review below</li>
+<li>3/4" plywood: 2–3 sheets — plates, centre stile, top-plate splice scab, and the centre-line blocking run. (Fewer than earlier versions: the outer stiles are pine now, and the two upper-panel seam-blocking runs are deleted.)</li>
 <li>1/2" plywood, paint-grade (birch/poplar core): 1 sheet — upper panel (switched from MDF for basement moisture tolerance; kept at 1/2", not dropped to the backers' 1/4", because the panel spans unsupported between cleats with no backing behind it)</li>
 <li>1/4" plywood, paint-grade (birch/poplar core): 3 sheets — backers</li>
 <li>1x4 primed pine: ~6 sticks of 8' — 3 stile battens per face (6 total). Widened from 1x3 so they cover the KALLAX bay play; also the stock for the two outer stiles if you rip those from pine rather than plywood</li>
 <li>1x3 primed pine: ~2 sticks of 8' — the 2 backer centre battens</li>
-<li>1x2 primed pine: ~4 sticks — upper panel perimeter/ceiling trim plus the 2 upper-panel seam cap strips</li>
+<li>1x2 primed pine: ~3 sticks — upper panel perimeter/ceiling trim plus the single seam cap strip (one per face)</li>
 <li>Baseboard: ~18 linear feet, profile to match each room's existing baseboard</li>
 <li>Outer stiles (= wall cleats): rip 1x4 pine to the 15 15/16" depth, or from 3/4" plywood offcuts — one member per side, not two</li>
 <li>Screws: construction screws for stud fastening; plus a small box of washer-head or large-head screws for the KALLAX-to-stile connection (a bare screw head pulls through KALLAX board)</li>
@@ -260,8 +315,8 @@ easier to do during assembly than afterwards.</p>
 <ul>
 <li><b>Out-of-plane tipping resistance (was Critical):</b> the ladder frame was tied to the building <i>only</i> at its two end wall-cleats, 104" apart, with zero connection from the center stile / center 104" span to the ceiling — a push anywhere near the middle had no real load path back to structure, and the KALLAX units are deliberately not fastened to the stiles so they can't help. Screwing the top plate more firmly to the stiles doesn't fix this: the top plate is two pieces butt-spliced <i>at the center stile</i> (the exact point with the longest, weakest load path), so it can't act as a single stiff beam distributing a center-span load out to the two end cleats — the splice itself is the weak link, not the stile joints. <b>Fix (corrected):</b> an earlier version of this fix specified brackets "at the top of the center stile" — wrong, because the center stile stops at the top plate (~59 3/16" high) exactly like the other two stiles, and the ceiling above it is 73 1/4" (the center stile's x-position is past the ceiling step, so it's in the low zone, not the 82 1/8" tall zone). There is nothing between the top plate and the ceiling there except the upper panel itself. The actual fix: a third vertical blocking run (same 3/4" x 1 1/2" spec as the panel's seam blocking) at the center stile's x-position, running top plate to ceiling (~14 1/16"), with the two steel angle brackets at <i>its</i> top, not the stile's. <b>Force path:</b> a push on the divider center transfers through the KALLAX carcass (unfastened, so it only transmits contact force, not stiffness) into the top plate (one continuous member across all 3 stile joints) into this new blocking run into the ceiling bracket into a joist or drywall anchor. See "Fastening decisions" and the cut list.</li>
 <li><b>Top plate splice unreinforced (was Critical):</b> the splice lands on only 3/8" of stile edge grain on each side with nothing else at the most-loaded joint in the frame. <b>Fix:</b> a 3/4" plywood scab (~16" long) glued and screwed across the top of the splice. See the cut list.</li>
-<li><b>Upper panel has no intermediate vertical support (was Important):</b> a ~102"-wide sheet held only at its top and bottom edges (four cleat runs, no verticals between them) will bow over that span. <b>Fix:</b> vertical blocking (3/4" x 1 1/2") added behind each of the 2 seams, top plate to ceiling cleat — turns one ~102"-wide unsupported bay into three bays of roughly 27"/38"/38", each backed by the seam's own cap strip on the room-facing side. See geometry.js's <code>UPPER_PANEL_SEAM_1/2</code> and elevation.js's <code>drawUpperPanel()</code>.</li>
-<li><b>Upper panel seams crossed the ceiling step (was Important):</b> seams previously placed at flat 48"/96" marks crossed the ceiling step at ~28 3/4" from the opening's left edge, making one panel piece an L-shaped cutout with an unspecified sheet layout. <b>Fix:</b> seams moved to land exactly at the step and at the low zone's mid-span, so all three panel pieces (~27 1/4", ~37 21/32", ~37 21/32") are plain rectangles. This also gives the vertical blocking above a sensible place to land. See the updated cut list.</li>
+<li><b>Upper panel "has no intermediate vertical support" (was Important — <span class="open">withdrawn, the finding was wrong</span>):</b> this review flagged that a ~102"-wide sheet held only at its top and bottom edges would bow, and added vertical blocking behind each seam to fix it. <b>On re-examination the premise does not hold.</b> The panel is captured in a cleat channel along its entire top and bottom edge, on both faces — so the unsupported span is its <i>height</i> between the cleats (14 1/16" low zone, 22 15/16" tall zone), not its 103" width. Half-inch plywood does not bow over 14"–23" with both long edges continuously restrained; 1/2" drywall spans 16"–24" between studs held only at its edges. <b>Resolution:</b> the seam blocking is deleted, and with it the extra panel seam that existed to give the blocking somewhere to land. See "Why the upper panel got simpler".</li>
+<li><b>Upper panel seams crossed the ceiling step (was Important):</b> seams previously placed at flat 48"/96" marks crossed the ceiling step at ~28 3/4" from the opening's left edge, making one panel piece an L-shaped cutout with an unspecified sheet layout. <b>Fix:</b> the seam moved to land exactly at the step, so both panel pieces (~27 29/32" and ~75 21/32") are plain rectangles. <i>(This finding stands — only the piece count changed, from three to two, when the mid-span seam was later removed along with the blocking it served.)</i> See the updated cut list.</li>
 <li><b><code>prompt.md</code> vs. <code>geometry.js</code> disagreement (was Critical):</b> <code>prompt.md</code> was the original handoff brief, written before field measurements — it now disagrees with the measured numbers in <code>geometry.js</code> on nearly every dimension (opening width, KALLAX sizes, stile length, upper panel material). <b>Fix:</b> <code>prompt.md</code> now carries an explicit stale-data warning at the top; <code>geometry.js</code> and this page are the only sources to cut from. See <code>CLAUDE.md</code>.</li>
 <li><b>Stale hardcoded dimension labels in the elevation drawings (Minor):</b> four height labels in <code>elevation.js</code> (base/carcass/ledge/upper-panel heights) were typed from the old <code>prompt.md</code> numbers instead of computed from the live constants like every other label on the page, so the bedroom/office elevations displayed measurements that quietly contradicted the cut list. <b>Fix:</b> all four now use <code>inchLabel()</code> against the same constants the cut list uses. Same fix applied to a stale divider-depth figure in <code>framing.html</code>'s frame note.</li>
 </ul>
