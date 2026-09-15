@@ -37,3 +37,24 @@ table.cutlist tr:hover td { background:#faf8f3; }
 @media (max-width: 700px) {
   table.cutlist { display:block; overflow-x:auto; white-space:nowrap; }
 }
+
+/* Collapsible detail sections — the background/rationale an interested
+   reader can open, kept out of the way of the core build info. */
+details.extra { margin-top:10px; border-top:1px solid #e0dcd2; padding-top:8px; }
+details.extra > summary {
+  cursor:pointer; font-size:13.5px; color:#6b5d3f; font-weight:600;
+  padding:4px 0; list-style:revert;
+}
+details.extra > summary:hover { color:#8a6d2f; }
+details.extra[open] > summary { margin-bottom:6px; }
+details.extra p, details.extra li { font-size:13.5px; }
+
+/* The short build brief at the top of the reference page. */
+.brief { font-size:15px; line-height:1.55; }
+.brief ul { font-size:15px; }
+.brief > p:first-child { margin-top:0; }
+.keypoint {
+  background:#fbf8f0; border-left:3px solid #c9a961;
+  padding:10px 14px; margin:12px 0; font-size:14.5px; line-height:1.5;
+}
+.keypoint b { color:#6b5d3f; }
